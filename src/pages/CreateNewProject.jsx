@@ -1,28 +1,25 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { login } from "../api/userApi";
+import { createProject } from "../api/projectApi";
 
-function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+function createNewProject() {
+  const navigate = useNavigate();
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const navigate = useNavigate();
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     try {
       setLoading(true);
-      const res = await login({ email, password });
-      if (res.data?.token);
-      localStorage.setItem("token", res.data.token);
-      if (res.data?.message === "auth success") {
-        alert("login successful!");
+      const res = await createProject({ title, content });
+
+      if (res.data?.message === "project created") {
         navigate("/");
       } else {
-        alert(res.data?.message || "login failed!");
+        console.log(res.data?.message || "Project creation failed!");
       }
     } catch (error) {
       if (!error.response) {
@@ -48,54 +45,46 @@ function Login() {
       } else {
         message = data?.message || message;
       }
+
       setError(message);
     } finally {
       setLoading(false);
     }
   };
+
   return (
-    <>
+    <div>
       <div className="flex items-center justify-center min-h-screen ">
         <div className="flex flex-col items-center w-60 bg-[#164B35] text-white rounded-sm p-5 space-y-2">
+          <p>Project</p>
           <form className="space-y-2" onSubmit={handleSubmit}>
-            <p>Login</p>
             <input
               type="text"
-              placeholder="email"
+              placeholder="title"
               className="bg-gray-900 p-1 rounded-sm"
-              value={email}
+              value={title}
               onChange={(e) => {
-                setEmail(e.target.value);
+                setTitle(e.target.value);
               }}
             ></input>
             <input
-              type="password"
-              placeholder="password"
+              type="text"
+              placeholder="content"
               className="bg-gray-900 p-1 rounded-sm"
-              value={password}
+              value={content}
               onChange={(e) => {
-                setPassword(e.target.value);
+                setContent(e.target.value);
               }}
             ></input>
-            <div className="text-sm text-white underline">
-              {error && <div className="text-sm text-red-500">{error}</div>}
-              <button type="submit">
-                {" "}
-                {loading ? "Loging in..." : "Login"}
-              </button>
-              <p
-                onClick={() => {
-                  navigate("/Signup");
-                }}
-              >
-                Dont have an account? signup
-              </p>
-            </div>
+            <button type="submit" disabled={loading}>
+              {loading ? "Creating..." : "Submit"}
+            </button>
+            {error && <div className="text-sm text-red-500">{error}</div>}
           </form>
         </div>
       </div>
-    </>
+    </div>
   );
 }
 
-export default Login;
+export default createNewProject;

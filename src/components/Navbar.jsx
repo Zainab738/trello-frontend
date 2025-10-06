@@ -5,11 +5,15 @@ import { useNavigate } from "react-router-dom";
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/login");
+  };
   return (
     <div>
       {/* desktop */}
-      <nav>
-        <ol className="hidden md:flex flex-row space-x-6 text-md bg-[#803FA5] text-white p-5 font-semibold">
+      <nav className="w-full">
+        <ol className="hidden md:flex flex-row space-x-6 text-md bg-[#803FA5] text-white p-5 font-semibold w-full">
           <li className="font-bold">Navbar</li>
           <li
             onClick={() => {
@@ -18,7 +22,7 @@ function Navbar() {
           >
             Home
           </li>
-          <li>Projects</li>
+
           <li
             onClick={() => {
               navigate("/Login");
@@ -33,11 +37,18 @@ function Navbar() {
           >
             Signup
           </li>
+          <li
+            onClick={() => {
+              handleLogout();
+            }}
+          >
+            Logout
+          </li>
         </ol>
       </nav>
       {/* mobile */}
 
-      <div className="md:hidden text-md bg-[#164B35] text-white p-5 font-semibold">
+      <div className="md:hidden text-md bg-[#803FA5] text-white p-5 font-semibold">
         <button
           onClick={() => {
             setIsOpen(!isOpen);
@@ -48,7 +59,7 @@ function Navbar() {
       </div>
 
       {isOpen && (
-        <ol className="flex flex-col space-y-6 text-md bg-[#164B35] text-white p-5 font-semibold  md:hidden">
+        <ol className="flex flex-col space-y-6 text-md bg-[#803FA5] text-white p-5 font-semibold  md:hidden w-full">
           <li>Home</li>
           <li>Projects</li>
           <li>Login</li>
