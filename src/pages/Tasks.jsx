@@ -61,8 +61,7 @@ export default function Task() {
   }, [inprogress, inreview, done]);
 
   return (
-    <div className="flex flex-col">
-      {/* No.1 */}
+    <div className="flex flex-col justify-center items-center">
       <button
         className="text-white mt-2"
         onClick={() => {
@@ -72,6 +71,7 @@ export default function Task() {
         Create new task
       </button>
       <div className="mt-10 flex flex-col space-y-2 items-center lg:flex-row md:space-x-5 lg:items-start justify-center">
+        {/* No.1 */}
         <TaskColumn
           title="Tasks"
           bgColor="bg-[#164B35]"
