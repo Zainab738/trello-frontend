@@ -23,7 +23,7 @@ export default function Task() {
     if (savedinprogress) setInprogress(JSON.parse(savedinprogress));
     if (savedinreview) setInreview(JSON.parse(savedinreview));
     if (saveddone) setDone(JSON.parse(saveddone));
-    if (savedtasks) setDone(JSON.parse(savedtasks));
+    if (savedtasks) setTasks(JSON.parse(savedtasks));
   }, []);
 
   useEffect(() => {
