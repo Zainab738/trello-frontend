@@ -18,10 +18,12 @@ export default function Task() {
     const savedinprogress = localStorage.getItem("inprogress");
     const savedinreview = localStorage.getItem("inreview");
     const saveddone = localStorage.getItem("done");
+    const savedtasks = localStorage.getItem("tasks");
 
     if (savedinprogress) setInprogress(JSON.parse(savedinprogress));
     if (savedinreview) setInreview(JSON.parse(savedinreview));
     if (saveddone) setDone(JSON.parse(saveddone));
+    if (savedtasks) setDone(JSON.parse(savedtasks));
   }, []);
 
   useEffect(() => {
@@ -58,7 +60,8 @@ export default function Task() {
     localStorage.setItem("inprogress", JSON.stringify(inprogress));
     localStorage.setItem("inreview", JSON.stringify(inreview));
     localStorage.setItem("done", JSON.stringify(done));
-  }, [inprogress, inreview, done]);
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+  }, [inprogress, inreview, done, tasks]);
 
   return (
     <div className="mt-10 flex flex-col space-y-2 items-center lg:flex-row md:space-x-5 lg:items-start justify-center">
@@ -67,7 +70,10 @@ export default function Task() {
         title="Tasks"
         bgColor="bg-[#164B35]"
         tasks={tasks}
-        moveRight={(task) => setInprogress([...inprogress, task])}
+        moveRight={(task) => {
+          setInprogress([...inprogress, task]);
+          setTasks(tasks.filter((t) => t._id !== task._id));
+        }}
         projectId={projectId}
         navigate={navigate}
         error={error}
@@ -77,10 +83,14 @@ export default function Task() {
         title="In Progress"
         bgColor="bg-[#101204]"
         tasks={inprogress}
-        moveLeft={(task) =>
-          setInprogress(inprogress.filter((t) => t._id !== task._id))
-        }
-        moveRight={(task) => setInreview([...inreview, task])}
+        moveLeft={(task) => {
+          setInprogress(inprogress.filter((t) => t._id !== task._id));
+          setTasks([...tasks, task]);
+        }}
+        moveRight={(task) => {
+          setInreview([...inreview, task]);
+          setInprogress(inprogress.filter((t) => t._id !== task._id));
+        }}
         projectId={projectId}
         navigate={navigate}
         error={error}
@@ -90,10 +100,14 @@ export default function Task() {
         title="In Review"
         bgColor="bg-[#533F04]"
         tasks={inreview}
-        moveLeft={(task) =>
-          setInreview(inreview.filter((t) => t._id !== task._id))
-        }
-        moveRight={(task) => setDone([...done, task])}
+        moveLeft={(task) => {
+          setInreview(inreview.filter((t) => t._id !== task._id));
+          setInprogress([...inprogress, task]);
+        }}
+        moveRight={(task) => {
+          setDone([...done, task]);
+          setInreview(inreview.filter((t) => t._id !== task._id));
+        }}
         projectId={projectId}
         navigate={navigate}
         error={error}
@@ -103,7 +117,10 @@ export default function Task() {
         title="Done"
         bgColor="bg-[#164B35]"
         tasks={done}
-        moveLeft={(task) => setDone(done.filter((t) => t._id !== task._id))}
+        moveLeft={(task) => {
+          setDone(done.filter((t) => t._id !== task._id));
+          setInreview([...inreview, task]);
+        }}
         moveRight={null}
         projectId={projectId}
         navigate={navigate}
