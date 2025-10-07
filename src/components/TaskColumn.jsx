@@ -1,7 +1,7 @@
 import React from "react";
 import Card from "./Card";
 import { Trash2, Pencil, ArrowBigRight, ArrowBigLeft } from "lucide-react";
-
+import { useNavigate } from "react-router-dom";
 function TaskColumn({
   title,
   bgColor,
@@ -9,9 +9,10 @@ function TaskColumn({
   moveLeft,
   moveRight,
   projectId,
-  navigate,
+
   error,
 }) {
+  const navigate = useNavigate();
   return (
     <div className={`rounded-sm ${bgColor}`}>
       <Card>

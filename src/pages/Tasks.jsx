@@ -64,68 +64,75 @@ export default function Task() {
   }, [inprogress, inreview, done, tasks]);
 
   return (
-    <div className="mt-10 flex flex-col space-y-2 items-center lg:flex-row md:space-x-5 lg:items-start justify-center">
+    <div className="flex flex-col">
       {/* No.1 */}
-      <TaskColumn
-        title="Tasks"
-        bgColor="bg-[#164B35]"
-        tasks={tasks}
-        moveRight={(task) => {
-          setInprogress([...inprogress, task]);
-          setTasks(tasks.filter((t) => t._id !== task._id));
+      <button
+        className="text-white mt-2"
+        onClick={() => {
+          navigate(`/CreateNewTask/${projectId}`);
         }}
-        projectId={projectId}
-        navigate={navigate}
-        error={error}
-      />
-      {/* No.2 */}
-      <TaskColumn
-        title="In Progress"
-        bgColor="bg-[#101204]"
-        tasks={inprogress}
-        moveLeft={(task) => {
-          setInprogress(inprogress.filter((t) => t._id !== task._id));
-          setTasks([...tasks, task]);
-        }}
-        moveRight={(task) => {
-          setInreview([...inreview, task]);
-          setInprogress(inprogress.filter((t) => t._id !== task._id));
-        }}
-        projectId={projectId}
-        navigate={navigate}
-        error={error}
-      />
-      {/* No.3 */}
-      <TaskColumn
-        title="In Review"
-        bgColor="bg-[#533F04]"
-        tasks={inreview}
-        moveLeft={(task) => {
-          setInreview(inreview.filter((t) => t._id !== task._id));
-          setInprogress([...inprogress, task]);
-        }}
-        moveRight={(task) => {
-          setDone([...done, task]);
-          setInreview(inreview.filter((t) => t._id !== task._id));
-        }}
-        projectId={projectId}
-        navigate={navigate}
-        error={error}
-      />
-      {/* No.4 */}
-      <TaskColumn
-        title="Done"
-        bgColor="bg-[#164B35]"
-        tasks={done}
-        moveLeft={(task) => {
-          setDone(done.filter((t) => t._id !== task._id));
-          setInreview([...inreview, task]);
-        }}
-        moveRight={null}
-        projectId={projectId}
-        navigate={navigate}
-        error={error}
-      />
+      >
+        Create new task
+      </button>
+      <div className="mt-10 flex flex-col space-y-2 items-center lg:flex-row md:space-x-5 lg:items-start justify-center">
+        <TaskColumn
+          title="Tasks"
+          bgColor="bg-[#164B35]"
+          tasks={tasks}
+          moveRight={(task) => {
+            setInprogress([...inprogress, task]);
+            setTasks(tasks.filter((t) => t._id !== task._id));
+          }}
+          projectId={projectId}
+          error={error}
+        />
+
+        {/* No.2 */}
+        <TaskColumn
+          title="In Progress"
+          bgColor="bg-[#101204]"
+          tasks={inprogress}
+          moveLeft={(task) => {
+            setInprogress(inprogress.filter((t) => t._id !== task._id));
+            setTasks([...tasks, task]);
+          }}
+          moveRight={(task) => {
+            setInreview([...inreview, task]);
+            setInprogress(inprogress.filter((t) => t._id !== task._id));
+          }}
+          projectId={projectId}
+          error={error}
+        />
+        {/* No.3 */}
+        <TaskColumn
+          title="In Review"
+          bgColor="bg-[#533F04]"
+          tasks={inreview}
+          moveLeft={(task) => {
+            setInreview(inreview.filter((t) => t._id !== task._id));
+            setInprogress([...inprogress, task]);
+          }}
+          moveRight={(task) => {
+            setDone([...done, task]);
+            setInreview(inreview.filter((t) => t._id !== task._id));
+          }}
+          projectId={projectId}
+          error={error}
+        />
+        {/* No.4 */}
+        <TaskColumn
+          title="Done"
+          bgColor="bg-[#164B35]"
+          tasks={done}
+          moveLeft={(task) => {
+            setDone(done.filter((t) => t._id !== task._id));
+            setInreview([...inreview, task]);
+          }}
+          moveRight={null}
+          projectId={projectId}
+          error={error}
+        />
+      </div>
     </div>
   );
 }
