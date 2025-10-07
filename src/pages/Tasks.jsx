@@ -18,12 +18,10 @@ export default function Task() {
     const savedinprogress = localStorage.getItem("inprogress");
     const savedinreview = localStorage.getItem("inreview");
     const saveddone = localStorage.getItem("done");
-    const savedtasks = localStorage.getItem("tasks");
 
     if (savedinprogress) setInprogress(JSON.parse(savedinprogress));
     if (savedinreview) setInreview(JSON.parse(savedinreview));
     if (saveddone) setDone(JSON.parse(saveddone));
-    if (savedtasks) setTasks(JSON.parse(savedtasks));
   }, []);
 
   useEffect(() => {
@@ -60,8 +58,7 @@ export default function Task() {
     localStorage.setItem("inprogress", JSON.stringify(inprogress));
     localStorage.setItem("inreview", JSON.stringify(inreview));
     localStorage.setItem("done", JSON.stringify(done));
-    localStorage.setItem("tasks", JSON.stringify(tasks));
-  }, [inprogress, inreview, done, tasks]);
+  }, [inprogress, inreview, done]);
 
   return (
     <div className="flex flex-col">
@@ -81,7 +78,7 @@ export default function Task() {
           tasks={tasks}
           moveRight={(task) => {
             setInprogress([...inprogress, task]);
-            setTasks(tasks.filter((t) => t._id !== task._id));
+            // setTasks(tasks.filter((t) => t._id !== task._id));
           }}
           projectId={projectId}
           error={error}
@@ -94,7 +91,7 @@ export default function Task() {
           tasks={inprogress}
           moveLeft={(task) => {
             setInprogress(inprogress.filter((t) => t._id !== task._id));
-            setTasks([...tasks, task]);
+            // setTasks([...tasks, task]);
           }}
           moveRight={(task) => {
             setInreview([...inreview, task]);
