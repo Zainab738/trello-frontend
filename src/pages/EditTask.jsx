@@ -26,7 +26,7 @@ function EditTask() {
           setTitle(task.title);
           setDescription(task.description);
           setStatus(task.status);
-          setDeadline(task.deadline);
+          setDeadline(task.deadline?.split("T")[0] || "");
         }
       } catch (error) {
         console.error("Fetch error:", error);
@@ -106,22 +106,32 @@ function EditTask() {
             className="bg-gray-900 p-2 rounded-sm w-full"
             onChange={(e) => setDescription(e.target.value)}
           />
-          <input
-            type="text"
+          <select
             value={status}
-            placeholder="Status"
             className="bg-gray-900 p-2 rounded-sm w-full"
             onChange={(e) => setStatus(e.target.value)}
-          />
+          >
+            <option value="">Select status</option>
+            <option value="Tasks">Tasks</option>
+            <option value="In Progress">In Progress</option>
+            <option value="In Review">In Review</option>
+            <option value="Done">Done</option>
+          </select>
+
           <input
-            type="text"
+            type="date"
             value={deadline}
-            placeholder="Deadline"
             className="bg-gray-900 p-2 rounded-sm w-full"
             onChange={(e) => setDeadline(e.target.value)}
+            min={new Date().toISOString().split("T")[0]}
           />
 
-          <button type="submit">Save Changes</button>
+          <button
+            type="submit"
+            className="px-3 py-1 rounded-sm bg-green-600 hover:bg-green-700"
+          >
+            Save Changes
+          </button>
         </form>
       </div>
     </div>

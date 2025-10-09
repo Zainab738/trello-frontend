@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getTasks } from "../api/taskApi";
+import { getTasks, updateTaskStatus } from "../api/taskApi";
 import { useNavigate, useParams } from "react-router-dom";
 import Card from "../components/Card";
 import TaskColumn from "../components/TaskColumn";
@@ -15,21 +15,15 @@ export default function Task() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const savedinprogress = localStorage.getItem("inprogress");
-    const savedinreview = localStorage.getItem("inreview");
-    const saveddone = localStorage.getItem("done");
-
-    if (savedinprogress) setInprogress(JSON.parse(savedinprogress));
-    if (savedinreview) setInreview(JSON.parse(savedinreview));
-    if (saveddone) setDone(JSON.parse(saveddone));
-  }, []);
-
-  useEffect(() => {
     const fetchTasks = async () => {
       try {
         const res = await getTasks(projectId);
         if (res.data?.message === "task fetched successfully") {
-          setTasks(res.data.task || []);
+          const allTasks = res.data.task || [];
+          setTasks(allTasks.filter((t) => t.status === "Tasks"));
+          setInprogress(allTasks.filter((t) => t.status === "In Progress"));
+          setInreview(allTasks.filter((t) => t.status === "In Review"));
+          setDone(allTasks.filter((t) => t.status === "Done"));
         } else {
           setError("Unexpected response from server");
         }
@@ -54,11 +48,17 @@ export default function Task() {
     fetchTasks();
   }, [projectId]);
 
-  useEffect(() => {
-    localStorage.setItem("inprogress", JSON.stringify(inprogress));
-    localStorage.setItem("inreview", JSON.stringify(inreview));
-    localStorage.setItem("done", JSON.stringify(done));
-  }, [inprogress, inreview, done]);
+  const handleMoveRight = async (task, from, to, setFrom, setTo, newStatus) => {
+    setTo([...to, { ...task, status: newStatus }]);
+    setFrom(from.filter((t) => t._id !== task._id));
+    await updateTaskStatus(task._id, newStatus);
+  };
+
+  const handleMoveLeft = async (task, from, to, setFrom, setTo, newStatus) => {
+    setTo([...to, { ...task, status: newStatus }]);
+    setFrom(from.filter((t) => t._id !== task._id));
+    await updateTaskStatus(task._id, newStatus);
+  };
 
   return (
     <div className="flex flex-col justify-center items-center">
@@ -71,60 +71,87 @@ export default function Task() {
         Create new task
       </button>
       <div className="mt-10 flex flex-col space-y-2 items-center lg:flex-row md:space-x-5 lg:items-start justify-center">
-        {/* No.1 */}
         <TaskColumn
           title="Tasks"
           bgColor="bg-[#164B35]"
           tasks={tasks}
-          moveRight={(task) => {
-            setInprogress([...inprogress, task]);
-            // setTasks(tasks.filter((t) => t._id !== task._id));
-          }}
+          moveRight={(task) =>
+            handleMoveRight(
+              task,
+              tasks,
+              inprogress,
+              setTasks,
+              setInprogress,
+              "In Progress"
+            )
+          }
           projectId={projectId}
           error={error}
         />
 
-        {/* No.2 */}
         <TaskColumn
           title="In Progress"
           bgColor="bg-[#101204]"
           tasks={inprogress}
-          moveLeft={(task) => {
-            setInprogress(inprogress.filter((t) => t._id !== task._id));
-            // setTasks([...tasks, task]);
-          }}
-          moveRight={(task) => {
-            setInreview([...inreview, task]);
-            setInprogress(inprogress.filter((t) => t._id !== task._id));
-          }}
+          moveLeft={(task) =>
+            handleMoveLeft(
+              task,
+              inprogress,
+              tasks,
+              setInprogress,
+              setTasks,
+              "Tasks"
+            )
+          }
+          moveRight={(task) =>
+            handleMoveRight(
+              task,
+              inprogress,
+              inreview,
+              setInprogress,
+              setInreview,
+              "In Review"
+            )
+          }
           projectId={projectId}
           error={error}
         />
-        {/* No.3 */}
+
         <TaskColumn
           title="In Review"
           bgColor="bg-[#533F04]"
           tasks={inreview}
-          moveLeft={(task) => {
-            setInreview(inreview.filter((t) => t._id !== task._id));
-            setInprogress([...inprogress, task]);
-          }}
-          moveRight={(task) => {
-            setDone([...done, task]);
-            setInreview(inreview.filter((t) => t._id !== task._id));
-          }}
+          moveLeft={(task) =>
+            handleMoveLeft(
+              task,
+              inreview,
+              inprogress,
+              setInreview,
+              setInprogress,
+              "In Progress"
+            )
+          }
+          moveRight={(task) =>
+            handleMoveRight(task, inreview, done, setInreview, setDone, "Done")
+          }
           projectId={projectId}
           error={error}
         />
-        {/* No.4 */}
+
         <TaskColumn
           title="Done"
           bgColor="bg-[#164B35]"
           tasks={done}
-          moveLeft={(task) => {
-            setDone(done.filter((t) => t._id !== task._id));
-            setInreview([...inreview, task]);
-          }}
+          moveLeft={(task) =>
+            handleMoveLeft(
+              task,
+              done,
+              inreview,
+              setDone,
+              setInreview,
+              "In Review"
+            )
+          }
           moveRight={null}
           projectId={projectId}
           error={error}

@@ -9,7 +9,7 @@ function CreateNewTask() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState("");
-  const [deadline, setDeadline] = useState("");
+  const [deadline, setDeadline] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -39,8 +39,8 @@ function CreateNewTask() {
       }
 
       const { status, data } = error.response;
-
       let message = "Something went wrong!";
+
       if (status === 500) {
         message = data?.error?.errorResponse?.errmsg || "Server error";
       } else if (status === 400) {
@@ -63,7 +63,7 @@ function CreateNewTask() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen ">
+    <div className="flex items-center justify-center min-h-screen">
       <div className="flex flex-col items-center w-72 bg-[#164B35] text-white rounded-sm p-5 space-y-2">
         <p>Create Task</p>
 
@@ -84,20 +84,24 @@ function CreateNewTask() {
             onChange={(e) => setDescription(e.target.value)}
           />
 
-          <input
-            type="text"
+          <select
             className="bg-gray-900 p-1 rounded-sm w-full"
             value={status}
-            placeholder="status"
             onChange={(e) => setStatus(e.target.value)}
-          ></input>
+          >
+            <option value="">Select status</option>
+            <option value="Tasks">Tasks</option>
+            <option value="In Progress">In Progress</option>
+            <option value="In Review">In Review</option>
+            <option value="Done">Done</option>
+          </select>
 
           <input
-            type="text"
+            type="date"
             className="bg-gray-900 p-1 rounded-sm w-full"
             value={deadline}
-            placeholder="deadline"
             onChange={(e) => setDeadline(e.target.value)}
+            min={new Date().toISOString().split("T")[0]}
           />
 
           <button

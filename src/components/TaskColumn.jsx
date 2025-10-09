@@ -10,14 +10,9 @@ function TaskColumn({
   moveLeft,
   moveRight,
   projectId,
-
   error,
 }) {
   const navigate = useNavigate();
-
-  const uniqueTasks = tasks.filter(
-    (task, index, self) => index === self.findIndex((t) => t._id === task._id)
-  );
 
   return (
     <div className={`rounded-sm ${bgColor}`}>
@@ -25,10 +20,9 @@ function TaskColumn({
         <div className="flex flex-col items-center space-y-2">
           <h1 className="text-lg font-semibold">{title}</h1>
           {error && <p className="text-red-500 text-sm">{error}</p>}
-
-          {uniqueTasks.length > 0 ? (
+          {tasks.length > 0 ? (
             <ol className="space-y-2">
-              {uniqueTasks.map((task) => (
+              {tasks.map((task) => (
                 <li
                   key={task._id}
                   className="border-1 border-white text-white px-5 py-2 rounded-md shadow-sm text-sm"
