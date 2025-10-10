@@ -13,12 +13,14 @@ export default function Task() {
   const [inreview, setInreview] = useState([]);
   const [done, setDone] = useState([]);
   const navigate = useNavigate();
-
   useEffect(() => {
     const fetchTasks = async () => {
       try {
         const res = await getTasks(projectId);
-        if (res.data?.message === "task fetched successfully") {
+        if (
+          res.data?.message === "Tasks fetched successfully" ||
+          res.data?.message === "No tasks yet"
+        ) {
           const allTasks = res.data.task || [];
           setTasks(allTasks.filter((t) => t.status === "Tasks"));
           setInprogress(allTasks.filter((t) => t.status === "In Progress"));
@@ -33,9 +35,7 @@ export default function Task() {
           return;
         }
         const { status, data } = error.response;
-        if (status === 404) {
-          setError(data?.message || "No tasks found for this project.");
-        } else if (status === 500) {
+        if (status === 500) {
           setError(data?.message || "Server error. Please try again later.");
         } else if (status === 401) {
           localStorage.removeItem("token");
