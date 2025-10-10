@@ -19,10 +19,9 @@ function Login() {
       if (res.data?.token);
       localStorage.setItem("token", res.data.token);
       if (res.data?.message === "auth success") {
-        alert("login successful!");
         navigate("/");
       } else {
-        alert(res.data?.message || "login failed!");
+        setError(res.data?.message || "login failed!");
       }
     } catch (error) {
       if (!error.response) {
