@@ -12,7 +12,10 @@ function Project() {
         const res = await getProject();
         console.log("Fetched:", res.data);
 
-        if (res.data?.message === "Project fetched successfully") {
+        if (
+          res.data?.message === "Project fetched successfully" ||
+          res.data?.message === "no projects yet "
+        ) {
           setProject(res.data.project || []);
         } else {
           setError("Unexpected response from server");
