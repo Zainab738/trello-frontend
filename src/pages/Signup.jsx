@@ -1,6 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { signup } from "../api/userApi";
+import Button from "@mui/material/Button";
+import { Input } from "@mui/material";
+import Link from "@mui/material/Link";
+import CircularProgress from "@mui/material/CircularProgress";
 
 function Signup() {
   const navigate = useNavigate();
@@ -15,7 +19,6 @@ function Signup() {
     setError("");
     try {
       setLoading(true);
-
       const res = await signup({ email, password, username });
 
       if (res.data?.message === "User created") {
@@ -51,51 +54,52 @@ function Signup() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen ">
-      <div className="flex flex-col items-center w-60 bg-[#164B35] text-white rounded-sm p-5 space-y-2">
-        <p>Signup</p>
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <div className="flex flex-col justify-center items-center w-60 max-w-sm bg-white text-blue-600 rounded-md p-6 space-y-4 shadow-lg">
+        <p className="font-semibold text-center text-lg">Signup</p>
 
-        <form onSubmit={handleSubmit} className="space-y-2">
-          <input
+        <form
+          className="flex flex-col space-y-4 w-full"
+          onSubmit={handleSubmit}
+        >
+          <Input
             type="text"
             placeholder="enter name"
-            className="bg-gray-900 p-1 rounded-sm"
             value={username}
             onChange={(e) => {
               setUsername(e.target.value);
             }}
-          ></input>
-          <input
+          ></Input>
+          <Input
             type="text"
             placeholder="enter email"
-            className="bg-gray-900 p-1 rounded-sm"
             value={email}
             onChange={(e) => {
               setEmail(e.target.value);
             }}
-          ></input>
-          <input
+          ></Input>
+          <Input
             type="password"
             placeholder="enter password"
-            className="bg-gray-900 p-1 rounded-sm"
             value={password}
             onChange={(e) => {
               setPassword(e.target.value);
             }}
-          ></input>
-          <button type="submit" disabled={loading}>
-            {loading ? "Signing up..." : "Sign up"}
-          </button>
+          ></Input>
           {error && <div className="text-sm text-red-500">{error}</div>}
-          <div className="text-sm text-white underline">
-            <p
-              onClick={() => {
-                navigate("/Login");
-              }}
-            >
-              Already have an account? Login
-            </p>
-          </div>
+
+          <Button
+            variant="contained"
+            type="submit"
+            disabled={loading}
+            color="primary"
+          >
+            {loading ? <CircularProgress size={30} /> : "Sign up"}
+          </Button>
+
+          <Link href="/Login " className="text-center">
+            Already have an account? Login
+          </Link>
         </form>
       </div>
     </div>

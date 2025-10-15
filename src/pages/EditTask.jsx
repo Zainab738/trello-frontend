@@ -1,15 +1,29 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getTasks, updateTasks } from "../api/taskApi";
+import {
+  TextField,
+  Input,
+  Button,
+  Select,
+  MenuItem,
+  InputLabel,
+  FormControl,
+} from "@mui/material";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import dayjs from "dayjs";
+import { CircularProgress } from "@mui/material";
 
 function EditTask() {
   const { id, projectId } = useParams();
   const navigate = useNavigate();
-
+  const [loading, setLoading] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState("");
-  const [deadline, setDeadline] = useState("");
+  const [deadline, setDeadline] = useState(null);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -26,7 +40,7 @@ function EditTask() {
           setTitle(task.title);
           setDescription(task.description);
           setStatus(task.status);
-          setDeadline(task.deadline?.split("T")[0] || "");
+          setDeadline(dayjs(task.deadline, "DD-MM-YYYY"));
         }
       } catch (error) {
         console.error("Fetch error:", error);
@@ -52,12 +66,14 @@ function EditTask() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+
     try {
       const res = await updateTasks(id, {
         title,
         description,
         status,
-        deadline,
+        deadline: deadline ? deadline.format("DD-MM-YYYY") : null,
         project: projectId,
       });
       if (res.data?.message === "updated") {
@@ -81,57 +97,67 @@ function EditTask() {
       } else {
         setError("Something went wrong.");
       }
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
-      <div className="flex flex-col items-center w-72 bg-[#164B35] text-white rounded-sm p-5 space-y-3">
-        <h2 className="text-lg font-semibold">Edit Task</h2>
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <div className="flex flex-col justify-center items-center w-72 max-w-sm bg-white text-blue-600 rounded-md p-6 space-y-4 shadow-lg">
+        <p className="font-semibold text-center text-lg">Edit Task</p>
 
         {error && <p className="text-red-500">{error}</p>}
 
-        <form className="space-y-2 w-full" onSubmit={handleSubmit}>
-          <input
+        <form className="space-y-4 w-full" onSubmit={handleSubmit}>
+          <Input
             type="text"
             value={title}
             placeholder="Title"
-            className="bg-gray-900 p-2 rounded-sm w-full"
             onChange={(e) => setTitle(e.target.value)}
+            fullWidth
           />
-          <input
+          <Input
             type="text"
             value={description}
             placeholder="Description"
-            className="bg-gray-900 p-2 rounded-sm w-full"
             onChange={(e) => setDescription(e.target.value)}
-          />
-          <select
-            value={status}
-            className="bg-gray-900 p-2 rounded-sm w-full"
-            onChange={(e) => setStatus(e.target.value)}
-          >
-            <option value="">Select status</option>
-            <option value="Tasks">Tasks</option>
-            <option value="In Progress">In Progress</option>
-            <option value="In Review">In Review</option>
-            <option value="Done">Done</option>
-          </select>
-
-          <input
-            type="date"
-            value={deadline}
-            className="bg-gray-900 p-2 rounded-sm w-full"
-            onChange={(e) => setDeadline(e.target.value)}
-            min={new Date().toISOString().split("T")[0]}
+            fullWidth
           />
 
-          <button
+          <FormControl fullWidth sx={{ mb: 2 }}>
+            <InputLabel id="status-label">Select Status</InputLabel>
+            <Select
+              labelId="status-label"
+              value={status}
+              label="Select Status"
+              onChange={(e) => setStatus(e.target.value)}
+            >
+              <MenuItem value="Tasks">Tasks</MenuItem>
+              <MenuItem value="In Progress">In Progress</MenuItem>
+              <MenuItem value="In Review">In Review</MenuItem>
+              <MenuItem value="Done">Done</MenuItem>
+            </Select>
+          </FormControl>
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DatePicker
+              label="Deadline"
+              value={deadline ? dayjs(deadline) : null}
+              onChange={(newValue) => setDeadline(newValue)}
+              minDate={dayjs()}
+            />
+          </LocalizationProvider>
+
+          <Button
+            sx={{ mt: 2 }}
+            variant="contained"
             type="submit"
-            className="px-3 py-1 rounded-sm bg-green-600 hover:bg-green-700"
+            fullWidth
+            color="primary"
+            disabled={loading}
           >
-            Save Changes
-          </button>
+            {loading ? <CircularProgress size={30} /> : "Save Changes"}
+          </Button>
         </form>
       </div>
     </div>

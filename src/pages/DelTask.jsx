@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { deleteTasks } from "../api/taskApi";
+import { Button } from "@mui/material";
 
 function DelTask() {
   const { projectId, taskId } = useParams();
@@ -56,20 +57,16 @@ function DelTask() {
       {error && <p className="text-red-500 text-sm">{error}</p>}
 
       <div className="flex space-x-4">
-        <button
-          onClick={handleDelete}
-          disabled={loading}
-          className="px-5 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
-        >
+        <Button onClick={handleDelete} disabled={loading}>
           {loading ? "Deleting..." : "Yes, delete"}
-        </button>
+        </Button>
 
-        <button
+        <Button
           onClick={() => navigate(`/Tasks/${projectId}`)}
-          className="px-5 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition"
+          color="deletebutton"
         >
           cancel{" "}
-        </button>
+        </Button>
       </div>
     </div>
   );

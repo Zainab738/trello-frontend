@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Trash2 } from "lucide-react";
 import { getProject } from "../api/projectApi";
+import Button from "@mui/material/Button";
+import { IconButton } from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
+
 function Project() {
   const navigate = useNavigate();
   const [error, setError] = useState("");
@@ -50,12 +53,14 @@ function Project() {
     <div className="flex flex-col space-y-4 ml-2">
       <div className="flex flex-col items-start space-y-2">
         <h1 className="text-lg font-bold">Projects</h1>
-        <button
+
+        <Button
+          variant="contained"
           onClick={() => navigate("/createnewproject")}
-          className="text-white bg-[#803FA5] p-2 rounded-sm"
+          color="primary"
         >
           Create new Project
-        </button>
+        </Button>
       </div>
 
       {error && <p className="text-red-500 text-sm">{error}</p>}
@@ -65,21 +70,21 @@ function Project() {
           project.map((proj) => (
             <li
               key={proj._id}
-              className="flex items-center justify-start text-white "
+              className="flex items-center justify-start text-black "
             >
-              <button
+              <Button
+                variant="outlined"
                 onClick={() => navigate(`/Tasks/${proj._id}`)}
-                className="text-base font-medium hover:underline"
+                color="primary"
               >
                 {proj.title}
-              </button>
+              </Button>
 
-              <button
+              <IconButton
                 onClick={() => navigate(`/deleteProject/${proj._id}`)}
-                className="hover:text-red-500 transition"
               >
-                <Trash2 size={18} />
-              </button>
+                <DeleteIcon />
+              </IconButton>
             </li>
           ))
         ) : (

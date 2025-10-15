@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { getTasks, updateTaskStatus } from "../api/taskApi";
 import { useNavigate, useParams } from "react-router-dom";
-import Card from "../components/Card";
 import TaskColumn from "../components/TaskColumn";
-import { Pencil, Trash2, ArrowBigLeft, ArrowBigRight } from "lucide-react";
+import { Button } from "@mui/material";
 
 export default function Task() {
   const { projectId } = useParams();
@@ -61,19 +60,20 @@ export default function Task() {
   };
 
   return (
-    <div className="flex flex-col justify-center items-center">
-      <button
-        className="text-white mt-2"
+    <div className="flex flex-col justify-center items-center mt-2">
+      <Button
+        color="primary"
+        variant="contained"
         onClick={() => {
           navigate(`/CreateNewTask/${projectId}`);
         }}
       >
         Create new task
-      </button>
+      </Button>
       <div className="mt-10 flex flex-col space-y-2 items-center lg:flex-row md:space-x-5 lg:items-start justify-center">
         <TaskColumn
           title="Tasks"
-          bgColor="bg-[#164B35]"
+          bgColor="bg-[#FA5A7C]"
           tasks={tasks}
           moveRight={(task) =>
             handleMoveRight(
@@ -91,7 +91,7 @@ export default function Task() {
 
         <TaskColumn
           title="In Progress"
-          bgColor="bg-[#101204]"
+          bgColor="bg-[#FF947A]"
           tasks={inprogress}
           moveLeft={(task) =>
             handleMoveLeft(
@@ -119,7 +119,7 @@ export default function Task() {
 
         <TaskColumn
           title="In Review"
-          bgColor="bg-[#533F04]"
+          bgColor="bg-[#38D857]"
           tasks={inreview}
           moveLeft={(task) =>
             handleMoveLeft(
@@ -140,7 +140,7 @@ export default function Task() {
 
         <TaskColumn
           title="Done"
-          bgColor="bg-[#164B35]"
+          bgColor="bg-[#BF83FF]"
           tasks={done}
           moveLeft={(task) =>
             handleMoveLeft(

@@ -1,6 +1,8 @@
 import React from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import AppBar from "@mui/material/AppBar";
+import Button from "@mui/material/Button";
 
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -12,8 +14,8 @@ function Navbar() {
   return (
     <div>
       {/* desktop */}
-      <nav className="w-full">
-        <ol className="hidden md:flex flex-row space-x-6 text-md bg-[#803FA5] text-white p-5 font-semibold w-full">
+      <AppBar color="primary">
+        <ol className="hidden md:flex flex-row space-x-6 text-md  text-white p-5 font-semibold w-full">
           <li className="font-bold">Navbar</li>
           <li
             onClick={() => {
@@ -45,21 +47,22 @@ function Navbar() {
             Logout
           </li>
         </ol>
-      </nav>
+      </AppBar>
       {/* mobile */}
 
-      <div className="md:hidden text-md bg-[#803FA5] text-white p-5 font-semibold">
-        <button
+      <div className="md:hidden text-md bg-[#6C6FF1] text-white p-5 font-semibold">
+        <Button
+          color="white"
           onClick={() => {
             setIsOpen(!isOpen);
           }}
         >
           Navbar
-        </button>
+        </Button>
       </div>
 
       {isOpen && (
-        <ol className="flex flex-col space-y-6 text-md bg-[#803FA5] text-white p-5 font-semibold  md:hidden w-full">
+        <ol className="flex flex-col space-y-6 text-md bg-[#6C6FF1] text-white p-5 font-semibold  md:hidden w-full">
           <li>Home</li>
           <li>Projects</li>
           <li>Login</li>

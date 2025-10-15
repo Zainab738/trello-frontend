@@ -1,27 +1,45 @@
-import React from "react";
-import { useState } from "react";
+import * as React from "react";
 import { useNavigate } from "react-router-dom";
+import Button from "@mui/material/Button";
+import Snackbar from "@mui/material/Snackbar";
+import { Input } from "@mui/material";
 import { login } from "../api/userApi";
+import CircularProgress from "@mui/material/CircularProgress";
+import { useState } from "react";
 
-function Login() {
+export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [snackbarState, setSnackbarState] = useState({
+    open: false,
+  });
 
   const navigate = useNavigate();
+  const { open } = snackbarState;
+
+  const handleClick = () => {
+    setSnackbarState({ open: true });
+  };
+
+  const handleClose = () => {
+    setSnackbarState({ open: false });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     try {
       setLoading(true);
       const res = await login({ email, password });
-      if (res.data?.token);
-      localStorage.setItem("token", res.data.token);
+      if (res.data?.token) localStorage.setItem("token", res.data.token);
+
       if (res.data?.message === "auth success") {
-        navigate("/");
+        handleClick();
+        setTimeout(() => navigate("/"), 2000);
       } else {
-        setError(res.data?.message || "login failed!");
+        setError(res.data?.message || "Login failed!");
       }
     } catch (error) {
       if (!error.response) {
@@ -37,9 +55,6 @@ function Login() {
       } else if (status === 400) {
         if (Array.isArray(data?.error?.errors)) {
           message = data.error.errors.join(" , ");
-        } else if (status === 401) {
-          localStorage.removeItem("token");
-          navigate("/Login");
         } else {
           message =
             data?.message || data?.error?.message || "Validation failed";
@@ -52,49 +67,43 @@ function Login() {
       setLoading(false);
     }
   };
+
   return (
-    <>
-      <div className="flex items-center justify-center min-h-screen ">
-        <div className="flex flex-col items-center w-60 bg-[#164B35] text-white rounded-sm p-5 space-y-2">
-          <form className="space-y-2" onSubmit={handleSubmit}>
-            <p>Login</p>
-            <input
-              type="text"
-              placeholder="email"
-              className="bg-gray-900 p-1 rounded-sm"
-              value={email}
-              onChange={(e) => {
-                setEmail(e.target.value);
-              }}
-            ></input>
-            <input
-              type="password"
-              placeholder="password"
-              className="bg-gray-900 p-1 rounded-sm"
-              value={password}
-              onChange={(e) => {
-                setPassword(e.target.value);
-              }}
-            ></input>
-            <div className="text-sm text-white underline">
-              {error && <div className="text-sm text-red-500">{error}</div>}
-              <button type="submit">
-                {" "}
-                {loading ? "Loging in..." : "Login"}
-              </button>
-              <p
-                onClick={() => {
-                  navigate("/Signup");
-                }}
-              >
-                Dont have an account? signup
-              </p>
-            </div>
-          </form>
-        </div>
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <div className="flex flex-col justify-center items-center w-60 max-w-sm bg-white text-blue-600 rounded-md p-6 space-y-4 shadow-lg">
+        <form
+          className="flex flex-col space-y-4 w-full"
+          onSubmit={handleSubmit}
+        >
+          <p className="font-semibold text-center text-lg">Login</p>
+          <Input
+            type="text"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <Input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          {error && (
+            <div className="text-sm text-red-500 text-center">{error}</div>
+          )}
+          <Button variant="contained" type="submit" color="primary">
+            {loading ? <CircularProgress size={30} /> : "Login"}
+          </Button>
+        </form>
       </div>
-    </>
+
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        open={open}
+        onClose={handleClose}
+        message="Login Successful!"
+        autoHideDuration={1000}
+      />
+    </div>
   );
 }
-
-export default Login;

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { deleteProject } from "../api/projectApi";
+import { Button } from "@mui/material";
 
 function DelProject() {
   const navigate = useNavigate();
@@ -58,20 +59,11 @@ function DelProject() {
       {error && <p className="text-red-500 text-sm">{error}</p>}
 
       <div className="flex space-x-4">
-        <button
-          onClick={handleDelete}
-          disabled={loading}
-          className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
-        >
+        <Button onClick={handleDelete} disabled={loading} color="deletebutton">
           {loading ? "Deleting..." : "Yes, delete"}
-        </button>
+        </Button>
 
-        <button
-          onClick={() => navigate("/")}
-          className="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition"
-        >
-          Cancel
-        </button>
+        <Button onClick={() => navigate("/")}>Cancel</Button>
       </div>
     </div>
   );

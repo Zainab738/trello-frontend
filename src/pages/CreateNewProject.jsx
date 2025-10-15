@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createProject } from "../api/projectApi";
+import { TextField, Input, Button } from "@mui/material";
+import { CircularProgress } from "@mui/material";
 
 function createNewProject() {
   const navigate = useNavigate();
@@ -54,31 +56,29 @@ function createNewProject() {
 
   return (
     <div>
-      <div className="flex items-center justify-center min-h-screen ">
-        <div className="flex flex-col items-center w-60 bg-[#164B35] text-white rounded-sm p-5 space-y-2">
-          <p>Project</p>
+      <div className="flex items-center justify-center min-h-screen bg-gray-100">
+        <div className="flex flex-col justify-center items-center w-60 max-w-sm bg-white text-blue-600 rounded-md p-6 space-y-4 shadow-lg">
+          <p className="font-semibold text-center text-lg">Project</p>
           <form className="space-y-2" onSubmit={handleSubmit}>
-            <input
+            <Input
               type="text"
               placeholder="title"
-              className="bg-gray-900 p-1 rounded-sm"
               value={title}
               onChange={(e) => {
                 setTitle(e.target.value);
               }}
-            ></input>
-            <input
+            ></Input>
+            <TextField
               type="text"
               placeholder="content"
-              className="bg-gray-900 p-1 rounded-sm"
               value={content}
               onChange={(e) => {
                 setContent(e.target.value);
               }}
-            ></input>
-            <button type="submit" disabled={loading}>
-              {loading ? "Creating..." : "Submit"}
-            </button>
+            ></TextField>
+            <Button type="submit" disabled={loading} color="primary">
+              {loading ? <CircularProgress size={30} /> : "Submit"}
+            </Button>
             {error && <div className="text-sm text-red-500">{error}</div>}
           </form>
         </div>
