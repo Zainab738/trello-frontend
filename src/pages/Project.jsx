@@ -50,7 +50,7 @@ function Project() {
   }, []);
 
   return (
-    <div className="flex flex-col space-y-4 ml-2 mt-20">
+    <div className="flex flex-col space-y-4 ml-2 mt-5 md:mt-20 ">
       <div className="flex flex-col items-start space-y-2">
         <h1 className="text-lg font-bold">Projects</h1>
 

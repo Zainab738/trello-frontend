@@ -60,7 +60,7 @@ export default function Task() {
   };
 
   return (
-    <div className="flex flex-col justify-center items-center mt-20">
+    <div className="flex flex-col justify-center items-center  mt-5 md:mt-20 ">
       <Button
         color="primary"
         variant="contained"

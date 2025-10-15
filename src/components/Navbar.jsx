@@ -63,10 +63,34 @@ function Navbar() {
 
       {isOpen && (
         <ol className="flex flex-col space-y-6 text-md bg-[#6C6FF1] text-white p-5 font-semibold  md:hidden w-full">
-          <li>Home</li>
-          <li>Projects</li>
-          <li>Login</li>
-          <li>Signup</li>
+          <li
+            onClick={() => {
+              navigate("/");
+            }}
+          >
+            Home
+          </li>
+          <li
+            onClick={() => {
+              navigate("/Login");
+            }}
+          >
+            Login
+          </li>
+          <li
+            onClick={() => {
+              navigate("/Signup");
+            }}
+          >
+            Signup
+          </li>
+          <li
+            onClick={() => {
+              handleLogout();
+            }}
+          >
+            Logout
+          </li>
         </ol>
       )}
     </div>
