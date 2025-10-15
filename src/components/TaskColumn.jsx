@@ -1,9 +1,13 @@
 import React from "react";
 import CardContainer from "./CardContainer";
-import { Trash2, Pencil, ArrowBigRight, ArrowBigLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
+import { IconButton } from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
+import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import CreateIcon from "@mui/icons-material/Create";
 
 function TaskColumn({
   title,
@@ -45,28 +49,30 @@ function TaskColumn({
 
                       <div className="flex flex-row justify-between">
                         {moveLeft && (
-                          <button onClick={() => moveLeft(task)}>
-                            <ArrowBigLeft size={18} />
-                          </button>
+                          <IconButton onClick={() => moveLeft(task)}>
+                            <ArrowBackIosNewIcon sx={{ color: "white" }} />
+                          </IconButton>
                         )}
-                        <button
+
+                        <IconButton
                           onClick={() =>
                             navigate(`/edittask/${projectId}/${task._id}`)
                           }
                         >
-                          <Pencil size={18} />
-                        </button>
-                        <button
+                          <CreateIcon sx={{ color: "white" }} />
+                        </IconButton>
+                        <IconButton
                           onClick={() =>
                             navigate(`/DelTask/${projectId}/${task._id}`)
                           }
                         >
-                          <Trash2 size={18} />
-                        </button>
+                          <DeleteIcon sx={{ color: "white" }} />
+                        </IconButton>
+
                         {moveRight && (
-                          <button onClick={() => moveRight(task)}>
-                            <ArrowBigRight size={18} />
-                          </button>
+                          <IconButton onClick={() => moveRight(task)}>
+                            <ArrowForwardIosIcon sx={{ color: "white" }} />
+                          </IconButton>
                         )}
                       </div>
                     </CardContent>
