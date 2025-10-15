@@ -32,6 +32,13 @@ const theme = createTheme({
         },
       },
     },
+    MuiLink: {
+      styleOverrides: {
+        root: {
+          fontSize: "0.9rem",
+        },
+      },
+    },
   },
 });
 

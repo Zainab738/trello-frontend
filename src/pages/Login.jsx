@@ -6,6 +6,7 @@ import { Input } from "@mui/material";
 import { login } from "../api/userApi";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useState } from "react";
+import Link from "@mui/material/Link";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -94,6 +95,9 @@ export default function Login() {
           <Button variant="contained" type="submit" color="primary">
             {loading ? <CircularProgress size={30} /> : "Login"}
           </Button>
+          <Link href="/Signup " className="text-center">
+            Dont have an account? Signup
+          </Link>
         </form>
       </div>
 
