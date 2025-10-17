@@ -65,20 +65,7 @@ function Navbar() {
           >
             Home
           </li>
-          <li
-            onClick={() => {
-              navigate("/Login");
-            }}
-          >
-            Login
-          </li>
-          <li
-            onClick={() => {
-              navigate("/Signup");
-            }}
-          >
-            Signup
-          </li>
+
           <li
             onClick={() => {
               handleLogout();

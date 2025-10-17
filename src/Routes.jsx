@@ -20,7 +20,6 @@ function fileRoutes() {
           <Route element={<ProtectedRoute />}>
             <Route path="/" element={<Project />} />
             <Route path="/Tasks/:projectId" element={<Tasks />} />
-
             <Route path="/createnewproject" element={<CreateNewProject />} />
             <Route path="/deleteproject/:id" element={<DelProject />} />
             <Route path="*" element={<Navigate to="/" replace />} />

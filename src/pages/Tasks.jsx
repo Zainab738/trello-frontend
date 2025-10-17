@@ -52,7 +52,7 @@ export default function Task() {
   };
 
   return (
-    <div className="flex flex-col justify-center items-center  mt-5 md:mt-20 ">
+    <div className="flex flex-col justify-center items-center  mt-5 md:mt-25 ">
       <Button
         color="primary"
         variant="contained"
@@ -62,92 +62,98 @@ export default function Task() {
       >
         Create new task
       </Button>
-      <div className="mt-10 flex flex-col space-y-2 items-center lg:flex-row md:space-x-5 lg:items-start justify-center ">
-        <TaskColumn
-          title="Tasks"
-          bgColor="bg-[#FA5A7C]"
-          tasks={tasks}
-          moveRight={(task) =>
-            handleMoveRight(
-              task,
-              tasks,
-              inprogress,
-              setTasks,
-              setInprogress,
-              "In Progress"
-            )
-          }
-          projectId={projectId}
-          error={error}
-        />
-
-        <TaskColumn
-          title="In Progress"
-          bgColor="bg-[#FF947A]"
-          tasks={inprogress}
-          moveLeft={(task) =>
-            handleMoveLeft(
-              task,
-              inprogress,
-              tasks,
-              setInprogress,
-              setTasks,
-              "Tasks"
-            )
-          }
-          moveRight={(task) =>
-            handleMoveRight(
-              task,
-              inprogress,
-              inreview,
-              setInprogress,
-              setInreview,
-              "In Review"
-            )
-          }
-          projectId={projectId}
-          error={error}
-        />
-
-        <TaskColumn
-          title="In Review"
-          bgColor="bg-[#38D857]"
-          tasks={inreview}
-          moveLeft={(task) =>
-            handleMoveLeft(
-              task,
-              inreview,
-              inprogress,
-              setInreview,
-              setInprogress,
-              "In Progress"
-            )
-          }
-          moveRight={(task) =>
-            handleMoveRight(task, inreview, done, setInreview, setDone, "Done")
-          }
-          projectId={projectId}
-          error={error}
-        />
-
-        <TaskColumn
-          title="Done"
-          bgColor="bg-[#BF83FF]"
-          tasks={done}
-          moveLeft={(task) =>
-            handleMoveLeft(
-              task,
-              done,
-              inreview,
-              setDone,
-              setInreview,
-              "In Review"
-            )
-          }
-          moveRight={null}
-          projectId={projectId}
-          error={error}
-        />
+      <div className="w-full max-w-[100vw] overflow-x-auto px-4">
+        <div className="mt-10 flex flex-row space-x-5 items-start md:justify-center justify-start min-w-max mx-auto">
+          <TaskColumn
+            title="Tasks"
+            bgColor="bg-[#FA5A7C]"
+            tasks={tasks}
+            moveRight={(task) =>
+              handleMoveRight(
+                task,
+                tasks,
+                inprogress,
+                setTasks,
+                setInprogress,
+                "In Progress"
+              )
+            }
+            projectId={projectId}
+            error={error}
+          />
+          <TaskColumn
+            title="In Progress"
+            bgColor="bg-[#FF947A]"
+            tasks={inprogress}
+            moveLeft={(task) =>
+              handleMoveLeft(
+                task,
+                inprogress,
+                tasks,
+                setInprogress,
+                setTasks,
+                "Tasks"
+              )
+            }
+            moveRight={(task) =>
+              handleMoveRight(
+                task,
+                inprogress,
+                inreview,
+                setInprogress,
+                setInreview,
+                "In Review"
+              )
+            }
+            projectId={projectId}
+            error={error}
+          />
+          <TaskColumn
+            title="In Review"
+            bgColor="bg-[#38D857]"
+            tasks={inreview}
+            moveLeft={(task) =>
+              handleMoveLeft(
+                task,
+                inreview,
+                inprogress,
+                setInreview,
+                setInprogress,
+                "In Progress"
+              )
+            }
+            moveRight={(task) =>
+              handleMoveRight(
+                task,
+                inreview,
+                done,
+                setInreview,
+                setDone,
+                "Done"
+              )
+            }
+            projectId={projectId}
+            error={error}
+          />
+          <TaskColumn
+            title="Done"
+            bgColor="bg-[#BF83FF]"
+            tasks={done}
+            moveLeft={(task) =>
+              handleMoveLeft(
+                task,
+                done,
+                inreview,
+                setDone,
+                setInreview,
+                "In Review"
+              )
+            }
+            moveRight={null}
+            projectId={projectId}
+            error={error}
+          />
+        </div>
       </div>
       {Create && (
         <CreateTask
