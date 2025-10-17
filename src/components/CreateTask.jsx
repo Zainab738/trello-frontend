@@ -1,5 +1,9 @@
-import React, { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useState } from "react";
+import Modal from "@mui/material/Modal";
+import { useNavigate } from "react-router-dom";
+import Container from "@mui/material/Container";
+import { useEffect } from "react";
+import { useParams } from "react-router-dom";
 import { createTask } from "../api/taskApi";
 import {
   TextField,
@@ -15,10 +19,10 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import { CircularProgress } from "@mui/material";
+import { handleerror } from "../api/handleError";
 
-function CreateNewTask() {
+export default function CreateTask({ open = true, onClose, projectId }) {
   const navigate = useNavigate();
-  const { projectId } = useParams();
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -43,43 +47,27 @@ function CreateNewTask() {
 
       if (res.data?.message === "task saved") {
         navigate(`/Tasks/${projectId}`);
+        window.location.reload();
       } else {
         setError(res.data?.message || "Task creation failed!");
       }
     } catch (error) {
-      if (!error.response) {
-        setError("Network error: " + error.message);
-        return;
-      }
-
-      const { status, data } = error.response;
-      let message = "Something went wrong!";
-
-      if (status === 500) {
-        message = data?.error?.errorResponse?.errmsg || "Server error";
-      } else if (status === 400) {
-        if (Array.isArray(data?.error?.errors)) {
-          message = data.error.errors.join(" , ");
-        } else if (status === 401) {
-          localStorage.removeItem("token");
-          navigate("/Login");
-        } else {
-          message =
-            data?.message || data?.error?.message || "Validation failed";
-        }
-      } else {
-        message = data?.message || message;
-      }
-      setError(message);
+      handleerror(error, setError, navigate);
     } finally {
       setLoading(false);
     }
   };
 
+  const handleBack = () => {
+    if (onClose) onClose();
+    else navigate(-1);
+  };
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="flex flex-col justify-center items-center w-72 max-w-sm bg-white text-blue-600 rounded-md p-6 space-y-4 shadow-lg">
-        <p className="font-semibold text-center text-lg">Create Task</p>
+    <Modal open={open} onClose={handleBack}>
+      <Container className="flex flex-col justify-center items-center bg-white ">
+        <p className=" font-semibold text-gray-800">Create Task</p>
+
+        {error && <p className="text-red-500 text-sm">{error}</p>}
 
         <form className="space-y-4 w-full" onSubmit={handleSubmit}>
           <Input
@@ -124,22 +112,16 @@ function CreateNewTask() {
             />
           </LocalizationProvider>
 
-          <Button
-            color="primary"
-            sx={{ mt: 2 }}
-            variant="contained"
-            type="submit"
-            disabled={loading}
-            fullWidth
-          >
-            {loading ? <CircularProgress size={30} /> : "Submit"}
-          </Button>
+          <div className="flex space-x-4">
+            <Button disabled={loading} onClick={handleSubmit}>
+              {loading ? <CircularProgress size={30} /> : "Save Changes"}
+            </Button>
+            <Button onClick={handleBack}>cancel </Button>
+          </div>
 
           {error && <div className="text-sm text-red-500">{error}</div>}
         </form>
-      </div>
-    </div>
+      </Container>
+    </Modal>
   );
 }
-
-export default CreateNewTask;

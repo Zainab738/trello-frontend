@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from "react";
-import { getTasks, updateTaskStatus } from "../api/taskApi";
+import { useEffect, useState } from "react";
+import { getTasks, updateTasks } from "../api/taskApi";
 import { useNavigate, useParams } from "react-router-dom";
 import TaskColumn from "../components/TaskColumn";
 import { Button } from "@mui/material";
+import { handleerror } from "../api/handleError";
+import CreateTask from "../components/CreateTask";
 
 export default function Task() {
   const { projectId } = useParams();
@@ -11,6 +13,8 @@ export default function Task() {
   const [inprogress, setInprogress] = useState([]);
   const [inreview, setInreview] = useState([]);
   const [done, setDone] = useState([]);
+  const [Create, setCreate] = useState(null);
+
   const navigate = useNavigate();
   useEffect(() => {
     const fetchTasks = async () => {
@@ -29,19 +33,7 @@ export default function Task() {
           setError("Unexpected response from server");
         }
       } catch (error) {
-        if (!error.response) {
-          setError("Network error: " + error.message);
-          return;
-        }
-        const { status, data } = error.response;
-        if (status === 500) {
-          setError(data?.message || "Server error. Please try again later.");
-        } else if (status === 401) {
-          localStorage.removeItem("token");
-          navigate("/Login");
-        } else {
-          setError("Something went wrong.");
-        }
+        handleerror(error, setError, navigate);
       }
     };
     fetchTasks();
@@ -50,13 +42,13 @@ export default function Task() {
   const handleMoveRight = async (task, from, to, setFrom, setTo, newStatus) => {
     setTo([...to, { ...task, status: newStatus }]);
     setFrom(from.filter((t) => t._id !== task._id));
-    await updateTaskStatus(task._id, newStatus);
+    await updateTasks(task._id, { ...task, status: newStatus });
   };
 
   const handleMoveLeft = async (task, from, to, setFrom, setTo, newStatus) => {
     setTo([...to, { ...task, status: newStatus }]);
     setFrom(from.filter((t) => t._id !== task._id));
-    await updateTaskStatus(task._id, newStatus);
+    await updateTasks(task._id, { ...task, status: newStatus });
   };
 
   return (
@@ -65,12 +57,12 @@ export default function Task() {
         color="primary"
         variant="contained"
         onClick={() => {
-          navigate(`/CreateNewTask/${projectId}`);
+          setCreate({ projectId });
         }}
       >
         Create new task
       </Button>
-      <div className="mt-10 flex flex-col space-y-2 items-center lg:flex-row md:space-x-5 lg:items-start justify-center">
+      <div className="mt-10 flex flex-col space-y-2 items-center lg:flex-row md:space-x-5 lg:items-start justify-center ">
         <TaskColumn
           title="Tasks"
           bgColor="bg-[#FA5A7C]"
@@ -157,6 +149,13 @@ export default function Task() {
           error={error}
         />
       </div>
+      {Create && (
+        <CreateTask
+          open={true}
+          projectId={Create.projectId}
+          onClose={() => setCreate(null)}
+        />
+      )}
     </div>
   );
 }

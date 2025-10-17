@@ -5,6 +5,8 @@ import Button from "@mui/material/Button";
 import { Input } from "@mui/material";
 import Link from "@mui/material/Link";
 import CircularProgress from "@mui/material/CircularProgress";
+import { handleerror } from "../api/handleError";
+import Snackbar from "@mui/material/Snackbar";
 
 function Signup() {
   const navigate = useNavigate();
@@ -13,41 +15,39 @@ function Signup() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [snackbarState, setSnackbarState] = useState({
+    open: false,
+  });
+  const [message, setMessage] = useState("");
+
+  const { open } = snackbarState;
+
+  const handleClick = () => {
+    setSnackbarState({ open: true });
+  };
+
+  const handleClose = () => {
+    setSnackbarState({ open: false });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+
     try {
       setLoading(true);
       const res = await signup({ email, password, username });
 
       if (res.data?.message === "User created") {
-        navigate("/Login");
+        setError(res.data?.message);
+        handleClick();
+        setTimeout(() => navigate("/Login"), 2000);
       } else {
         setError(res.data?.message || "Signup failed!");
       }
     } catch (error) {
-      if (!error.response) {
-        setError("Network error: " + error.message);
-        return;
-      }
-
-      const { status, data } = error.response;
-
-      let message = "Something went wrong!";
-      if (status === 500) {
-        message = data?.error?.errorResponse?.errmsg || "Server error";
-      } else if (status === 400) {
-        if (Array.isArray(data?.error?.errors)) {
-          message = data.error.errors.join(" , ");
-        } else {
-          message =
-            data?.message || data?.error?.message || "Validation failed";
-        }
-      } else {
-        message = data?.message || message;
-      }
-      setError(message);
+      handleerror(error, setError, navigate);
+      handleClick();
     } finally {
       setLoading(false);
     }
@@ -86,7 +86,6 @@ function Signup() {
               setPassword(e.target.value);
             }}
           ></Input>
-          {error && <div className="text-sm text-red-500">{error}</div>}
 
           <Button
             variant="contained"
@@ -102,6 +101,13 @@ function Signup() {
           </Link>
         </form>
       </div>
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        open={open}
+        onClose={handleClose}
+        message={error}
+        autoHideDuration={1000}
+      />
     </div>
   );
 }

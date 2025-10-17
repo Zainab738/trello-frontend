@@ -27,7 +27,3 @@ export const deleteTasks = (id) => {
 export const updateTasks = (id, data) => {
   return taskApi.patch(`/update/${id}`, data);
 };
-//updatestatuss
-export const updateTaskStatus = (id, status) => {
-  return taskApi.patch(`/update-status/${id}`, { status });
-};

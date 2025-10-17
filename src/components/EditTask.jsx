@@ -1,5 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import React, { useState } from "react";
+import Modal from "@mui/material/Modal";
+import { useNavigate } from "react-router-dom";
+import Container from "@mui/material/Container";
+import { useEffect } from "react";
 import { getTasks, updateTasks } from "../api/taskApi";
 import {
   TextField,
@@ -15,16 +18,17 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import { CircularProgress } from "@mui/material";
+import { handleerror } from "../api/handleError";
 
-function EditTask() {
-  const { id, projectId } = useParams();
+export default function EditTask({ open = true, onClose, projectId, taskId }) {
   const navigate = useNavigate();
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState("");
   const [deadline, setDeadline] = useState(null);
-  const [error, setError] = useState("");
+  const id = taskId;
 
   useEffect(() => {
     const fetchTask = async () => {
@@ -32,8 +36,11 @@ function EditTask() {
         const res = await getTasks(projectId);
 
         if (res.data?.task) {
-          const task = res.data.task.find((t) => t._id === id);
+          const task = res.data.task.find((t) => t._id === id); //t._id
+          console.log(task);
+          console.log(res.data.task);
           if (!task) {
+            console.log(task);
             setError("Task not found");
             return;
           }
@@ -43,22 +50,7 @@ function EditTask() {
           setDeadline(dayjs(task.deadline, "DD-MM-YYYY"));
         }
       } catch (error) {
-        console.error("Fetch error:", error);
-
-        if (!error.response) {
-          setError("Network error: " + error.message);
-          return;
-        }
-
-        const { status, data } = error.response;
-
-        if (status === 404) {
-          setError(data?.message || "No tasks found for this project.");
-        } else if (status === 500) {
-          setError(data?.message || "Server error. Please try again later.");
-        } else {
-          setError("Something went wrong.");
-        }
+        handleerror(error, setError, navigate);
       }
     };
     fetchTask();
@@ -78,7 +70,7 @@ function EditTask() {
       });
       if (res.data?.message === "updated") {
         console.log("Task updated!");
-        navigate(`/Tasks/${projectId}`);
+        window.location.reload();
       }
     } catch (error) {
       console.error("Fetch error:", error);
@@ -101,13 +93,16 @@ function EditTask() {
       setLoading(false);
     }
   };
-
+  const handleBack = () => {
+    if (onClose) onClose();
+    else navigate(-1);
+  };
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="flex flex-col justify-center items-center w-72 max-w-sm bg-white text-blue-600 rounded-md p-6 space-y-4 shadow-lg">
-        <p className="font-semibold text-center text-lg">Edit Task</p>
+    <Modal open={open} onClose={handleBack}>
+      <Container className="flex flex-col justify-center items-center bg-white ">
+        <p className=" font-semibold text-gray-800">Edit Task</p>
 
-        {error && <p className="text-red-500">{error}</p>}
+        {error && <p className="text-red-500 text-sm">{error}</p>}
 
         <form className="space-y-4 w-full" onSubmit={handleSubmit}>
           <Input
@@ -117,7 +112,8 @@ function EditTask() {
             onChange={(e) => setTitle(e.target.value)}
             fullWidth
           />
-          <Input
+          <TextField
+            sx={{ mb: 2 }}
             type="text"
             value={description}
             placeholder="Description"
@@ -147,21 +143,14 @@ function EditTask() {
               minDate={dayjs()}
             />
           </LocalizationProvider>
-
-          <Button
-            sx={{ mt: 2 }}
-            variant="contained"
-            type="submit"
-            fullWidth
-            color="primary"
-            disabled={loading}
-          >
-            {loading ? <CircularProgress size={30} /> : "Save Changes"}
-          </Button>
+          <div className="flex space-x-4">
+            <Button disabled={loading} onClick={handleSubmit}>
+              {loading ? <CircularProgress size={30} /> : "Save Changes"}
+            </Button>
+            <Button onClick={handleBack}>cancel </Button>
+          </div>
         </form>
-      </div>
-    </div>
+      </Container>
+    </Modal>
   );
 }
-
-export default EditTask;

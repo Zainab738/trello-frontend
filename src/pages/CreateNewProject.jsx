@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { createProject } from "../api/projectApi";
 import { TextField, Input, Button } from "@mui/material";
 import { CircularProgress } from "@mui/material";
+import { handleerror } from "../api/handleError";
 
 function createNewProject() {
   const navigate = useNavigate();
@@ -24,31 +25,7 @@ function createNewProject() {
         console.log(res.data?.message || "Project creation failed!");
       }
     } catch (error) {
-      if (!error.response) {
-        setError("Network error: " + error.message);
-        return;
-      }
-
-      const { status, data } = error.response;
-
-      let message = "Something went wrong!";
-      if (status === 500) {
-        message = data?.error?.errorResponse?.errmsg || "Server error";
-      } else if (status === 400) {
-        if (Array.isArray(data?.error?.errors)) {
-          message = data.error.errors.join(" , ");
-        } else if (status === 401) {
-          localStorage.removeItem("token");
-          navigate("/Login");
-        } else {
-          message =
-            data?.message || data?.error?.message || "Validation failed";
-        }
-      } else {
-        message = data?.message || message;
-      }
-
-      setError(message);
+      handleerror(error, setError, navigate);
     } finally {
       setLoading(false);
     }

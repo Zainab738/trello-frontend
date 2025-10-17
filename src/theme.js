@@ -18,7 +18,7 @@ const theme = createTheme({
           padding: "20px",
           borderRadius: "10px",
           boxShadow: "0 4px 10px rgba(0,0,0,0.3)",
-          minWidth: "17rem",
+          width: "17rem",
         },
       },
     },

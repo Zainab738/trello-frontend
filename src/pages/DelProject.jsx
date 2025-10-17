@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { deleteProject } from "../api/projectApi";
 import { Button } from "@mui/material";
+import { handleerror } from "../api/handleError";
 
 function DelProject() {
   const navigate = useNavigate();
@@ -21,30 +22,7 @@ function DelProject() {
         setError("Unexpected response from server");
       }
     } catch (error) {
-      if (!error.response) {
-        setError("Network error: " + error.message);
-        return;
-      }
-
-      const { status, data } = error.response;
-
-      let message = "Something went wrong!";
-      if (status === 500) {
-        message = data?.error?.errorResponse?.errmsg || "Server error";
-      } else if (status === 400) {
-        if (Array.isArray(data?.error?.errors)) {
-          message = data.error.errors.join(" , ");
-        } else if (status === 401) {
-          localStorage.removeItem("token");
-          navigate("/Login");
-        } else {
-          message =
-            data?.message || data?.error?.message || "Validation failed";
-        }
-      } else {
-        message = data?.message || message;
-      }
-      setError(message);
+      handleerror(error, setError, navigate);
     } finally {
       setLoading(false);
     }

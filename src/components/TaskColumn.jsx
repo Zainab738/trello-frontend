@@ -3,12 +3,14 @@ import CardContainer from "./CardContainer";
 import { useNavigate } from "react-router-dom";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
-import { IconButton } from "@mui/material";
+import { Button, IconButton } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import CreateIcon from "@mui/icons-material/Create";
-
+import DeleteTask from "./DeleteTask";
+import { useState } from "react";
+import EditTask from "./EditTask";
 function TaskColumn({
   title,
   bgColor,
@@ -19,6 +21,8 @@ function TaskColumn({
   error,
 }) {
   const navigate = useNavigate();
+  const [DelTask, setDelTask] = useState(null);
+  const [Edit, setEdit] = useState(null);
 
   return (
     <div className={`rounded-lg ${bgColor}`}>
@@ -56,19 +60,19 @@ function TaskColumn({
 
                         <IconButton
                           onClick={() =>
-                            navigate(`/edittask/${projectId}/${task._id}`)
+                            setEdit({ projectId, taskId: task._id })
                           }
                         >
                           <CreateIcon sx={{ color: "white" }} />
                         </IconButton>
+
                         <IconButton
                           onClick={() =>
-                            navigate(`/DelTask/${projectId}/${task._id}`)
+                            setDelTask({ projectId, taskId: task._id })
                           }
                         >
                           <DeleteIcon sx={{ color: "white" }} />
                         </IconButton>
-
                         {moveRight && (
                           <IconButton onClick={() => moveRight(task)}>
                             <ArrowForwardIosIcon sx={{ color: "white" }} />
@@ -82,6 +86,23 @@ function TaskColumn({
             </ol>
           ) : (
             <p>No tasks here</p>
+          )}
+
+          {DelTask && (
+            <DeleteTask
+              open={true}
+              projectId={DelTask.projectId}
+              taskId={DelTask.taskId}
+              onClose={() => setDelTask(null)}
+            />
+          )}
+          {Edit && (
+            <EditTask
+              open={true}
+              projectId={Edit.projectId}
+              taskId={Edit.taskId}
+              onClose={() => setEdit(null)}
+            />
           )}
         </div>
       </CardContainer>

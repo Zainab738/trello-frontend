@@ -7,15 +7,16 @@ import { login } from "../api/userApi";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useState } from "react";
 import Link from "@mui/material/Link";
+import { handleerror } from "../api/handleError";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [snackbarState, setSnackbarState] = useState({
     open: false,
   });
+  const [message, setMessage] = useState("");
 
   const navigate = useNavigate();
   const { open } = snackbarState;
@@ -30,21 +31,24 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
+    setMessage("");
     try {
       setLoading(true);
       const res = await login({ email, password });
       if (res.data?.token) localStorage.setItem("token", res.data.token);
 
-      if (res.data?.message === "auth success") {
+      if (res.data?.message === "login success") {
+        setMessage(res.data?.message);
         handleClick();
         setTimeout(() => navigate("/"), 2000);
       } else {
-        setError(res.data?.message || "Login failed!");
+        setMessage(res.data?.message || "Login failed!");
+        handleClick();
       }
     } catch (error) {
       if (!error.response) {
-        setError("Network error: " + error.message);
+        setMessage(error.message);
+        handleClick();
         return;
       }
 
@@ -63,7 +67,8 @@ export default function Login() {
       } else {
         message = data?.message || message;
       }
-      setError(message);
+      handleClick();
+      setMessage(message);
     } finally {
       setLoading(false);
     }
@@ -89,9 +94,9 @@ export default function Login() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          {error && (
+          {/* {error && (
             <div className="text-sm text-red-500 text-center">{error}</div>
-          )}
+          )} */}
           <Button variant="contained" type="submit" color="primary">
             {loading ? <CircularProgress size={30} /> : "Login"}
           </Button>
@@ -105,7 +110,7 @@ export default function Login() {
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
         open={open}
         onClose={handleClose}
-        message="Login Successful!"
+        message={message}
         autoHideDuration={1000}
       />
     </div>

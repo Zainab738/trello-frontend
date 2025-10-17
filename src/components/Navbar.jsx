@@ -16,35 +16,30 @@ function Navbar() {
       {/* desktop */}
       <AppBar color="primary">
         <ol className="hidden md:flex flex-row space-x-6 text-md  text-white p-5 font-semibold w-full">
-          <li className="font-bold">Navbar</li>
-          <li
-            onClick={() => {
-              navigate("/");
-            }}
-          >
-            Home
+          <li className="font-bold">
+            <Button color="white">Navbar</Button>
+          </li>
+          <li>
+            <Button
+              color="white"
+              onClick={() => {
+                navigate("/");
+              }}
+            >
+              {" "}
+              Home
+            </Button>
           </li>
 
-          <li
-            onClick={() => {
-              navigate("/Login");
-            }}
-          >
-            Login
-          </li>
-          <li
-            onClick={() => {
-              navigate("/Signup");
-            }}
-          >
-            Signup
-          </li>
-          <li
-            onClick={() => {
-              handleLogout();
-            }}
-          >
-            Logout
+          <li>
+            <Button
+              color="white"
+              onClick={() => {
+                handleLogout();
+              }}
+            >
+              Logout
+            </Button>
           </li>
         </ol>
       </AppBar>
