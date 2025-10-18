@@ -59,8 +59,7 @@ export default function CreateTask({ open = true, onClose, projectId }) {
   };
 
   const handleBack = () => {
-    if (onClose) onClose();
-    else navigate(-1);
+    onClose();
   };
   return (
     <Modal open={open} onClose={handleBack}>

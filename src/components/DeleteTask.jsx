@@ -34,8 +34,7 @@ export default function DeleteTask({
     }
   };
   const handleBack = () => {
-    if (onClose) onClose();
-    else navigate(-1);
+    onClose();
   };
 
   return (

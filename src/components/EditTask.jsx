@@ -94,8 +94,7 @@ export default function EditTask({ open = true, onClose, projectId, taskId }) {
     }
   };
   const handleBack = () => {
-    if (onClose) onClose();
-    else navigate(-1);
+    onClose();
   };
   return (
     <Modal open={open} onClose={handleBack}>
