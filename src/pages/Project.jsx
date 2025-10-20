@@ -39,9 +39,9 @@ function Project() {
   }, []);
 
   return (
-    <TableContainer className="ml-2 mt-2 md:mt-20">
+    <TableContainer className=" mt-2 md:mt-20">
       <Table>
-        <div className="flex flex-col items-start space-y-2">
+        <div className="flex flex-col items-start space-y-2 ml-2">
           <h1 className="text-lg font-bold">Projects</h1>
 
           <Button
