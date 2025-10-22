@@ -3,7 +3,7 @@ import Modal from "@mui/material/Modal";
 import { Button, Snackbar } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import Container from "@mui/material/Container";
-import { deleteTasks } from "../api/taskApi";
+import { deleteProject } from "../api/projectApi";
 import { handleerror } from "../api/handleError";
 import Alert from "@mui/material/Alert";
 
@@ -11,12 +11,12 @@ export default function DeleteTask({
   open = true,
   onClose,
   projectId,
-  taskId,
-  setTasks,
+  setProject,
 }) {
   const navigate = useNavigate();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const id = projectId;
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [alertType, setAlertType] = useState("");
 
@@ -26,12 +26,16 @@ export default function DeleteTask({
   const handleDelete = async () => {
     setLoading(true);
     try {
-      const res = await deleteTasks(taskId);
-      if (res.data?.message === "task deleted successfully") {
+      console.log("id");
+      console.log(id);
+      const res = await deleteProject(id);
+      if (res.data?.message === "Project deleted successfully") {
         setAlertType("success");
         setError(res.data?.message);
         handleSnackbarOpen();
-        setTasks((prev) => prev.filter((task) => task._id !== taskId));
+        setProject((prev) =>
+          prev.filter((project) => project._id !== projectId)
+        );
         setTimeout(() => {
           onClose();
         }, 1000);
@@ -56,7 +60,7 @@ export default function DeleteTask({
     <Modal open={open} onClose={handleBack}>
       <Container className="flex flex-col justify-center items-center bg-white ">
         <p className=" font-semibold text-gray-800">
-          Are you sure you want to delete this task?
+          Are you sure you want to delete this project?
         </p>
 
         <div className="flex space-x-4">

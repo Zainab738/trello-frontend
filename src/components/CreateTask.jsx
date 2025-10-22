@@ -13,6 +13,7 @@ import {
   MenuItem,
   InputLabel,
   FormControl,
+  Snackbar,
 } from "@mui/material";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
@@ -20,8 +21,14 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import { CircularProgress } from "@mui/material";
 import { handleerror } from "../api/handleError";
+import Alert from "@mui/material/Alert";
 
-export default function CreateTask({ open = true, onClose, projectId }) {
+export default function CreateTask({
+  open = true,
+  onClose,
+  projectId,
+  setTasks,
+}) {
   const navigate = useNavigate();
 
   const [title, setTitle] = useState("");
@@ -30,6 +37,11 @@ export default function CreateTask({ open = true, onClose, projectId }) {
   const [deadline, setDeadline] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [alertType, setAlertType] = useState("");
+
+  const handleSnackbarOpen = () => setSnackbarOpen(true);
+  const handleSnackbarClose = () => setSnackbarOpen(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -46,13 +58,22 @@ export default function CreateTask({ open = true, onClose, projectId }) {
       });
 
       if (res.data?.message === "task saved") {
-        navigate(`/Tasks/${projectId}`);
-        window.location.reload();
+        setAlertType("success");
+        setError(res.data?.message);
+        handleSnackbarOpen();
+        setTasks((prev) => [...prev, res.data.task]);
+        setTimeout(() => {
+          onClose();
+        }, 1000);
       } else {
+        setAlertType("error");
         setError(res.data?.message || "Task creation failed!");
+        handleSnackbarOpen();
       }
     } catch (error) {
+      setAlertType("error");
       handleerror(error, setError, navigate);
+      handleSnackbarOpen();
     } finally {
       setLoading(false);
     }
@@ -66,8 +87,6 @@ export default function CreateTask({ open = true, onClose, projectId }) {
       <Container className="flex flex-col justify-center items-center bg-white ">
         <p className=" font-semibold text-gray-800">Create Task</p>
 
-        {error && <p className="text-red-500 text-sm">{error}</p>}
-
         <form className="space-y-4 w-full" onSubmit={handleSubmit}>
           <Input
             type="text"
@@ -76,7 +95,6 @@ export default function CreateTask({ open = true, onClose, projectId }) {
             onChange={(e) => setTitle(e.target.value)}
             fullWidth
           />
-
           <TextField
             type="text"
             placeholder="Description"
@@ -85,7 +103,6 @@ export default function CreateTask({ open = true, onClose, projectId }) {
             fullWidth
             sx={{ mb: 2 }}
           />
-
           <FormControl fullWidth sx={{ mb: 2 }}>
             <InputLabel id="status-label">Select Status</InputLabel>
             <Select
@@ -100,7 +117,6 @@ export default function CreateTask({ open = true, onClose, projectId }) {
               <MenuItem value="Done">Done</MenuItem>
             </Select>
           </FormControl>
-
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DatePicker
               label="Deadline"
@@ -110,15 +126,21 @@ export default function CreateTask({ open = true, onClose, projectId }) {
               format="DD-MM-YYYY"
             />
           </LocalizationProvider>
-
           <div className="flex space-x-4">
             <Button disabled={loading} onClick={handleSubmit}>
               {loading ? <CircularProgress size={30} /> : "Save Changes"}
             </Button>
             <Button onClick={handleBack}>cancel </Button>
           </div>
-
-          {error && <div className="text-sm text-red-500">{error}</div>}
+          {/* Snackbar */}
+          <Snackbar
+            anchorOrigin={{ vertical: "top", horizontal: "center" }}
+            open={snackbarOpen}
+            onClose={handleSnackbarClose}
+            autoHideDuration={2000}
+          >
+            <Alert severity={alertType}>{error}</Alert>
+          </Snackbar>
         </form>
       </Container>
     </Modal>

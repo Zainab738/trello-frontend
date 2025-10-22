@@ -22,3 +22,7 @@ export const createProject = (data) => {
 export const deleteProject = (id) => {
   return projectApi.delete(`/deleteprojects/${id}`);
 };
+//update
+export const updateProject = (id, data) => {
+  return projectApi.patch(`/update/${id}`, data);
+};

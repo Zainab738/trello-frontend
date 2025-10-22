@@ -1,9 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Modal from "@mui/material/Modal";
 import { useNavigate } from "react-router-dom";
 import Container from "@mui/material/Container";
-import { useEffect } from "react";
-import { getTasks, updateTasks } from "../api/taskApi";
 import {
   TextField,
   Input,
@@ -12,15 +10,24 @@ import {
   MenuItem,
   InputLabel,
   FormControl,
+  CircularProgress,
+  Snackbar,
 } from "@mui/material";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
-import { CircularProgress } from "@mui/material";
+import { getTasks, updateTasks } from "../api/taskApi";
 import { handleerror } from "../api/handleError";
+import Alert from "@mui/material/Alert";
 
-export default function EditTask({ open = true, onClose, projectId, taskId }) {
+export default function EditTask({
+  open = true,
+  onClose,
+  projectId,
+  taskId,
+  setTasks,
+}) {
   const navigate = useNavigate();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -28,19 +35,21 @@ export default function EditTask({ open = true, onClose, projectId, taskId }) {
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState("");
   const [deadline, setDeadline] = useState(null);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [alertType, setAlertType] = useState("");
+
   const id = taskId;
+
+  const handleSnackbarOpen = () => setSnackbarOpen(true);
+  const handleSnackbarClose = () => setSnackbarOpen(false);
 
   useEffect(() => {
     const fetchTask = async () => {
       try {
         const res = await getTasks(projectId);
-
         if (res.data?.task) {
-          const task = res.data.task.find((t) => t._id === id); //t._id
-          console.log(task);
-          console.log(res.data.task);
+          const task = res.data.task.find((t) => t._id === id);
           if (!task) {
-            console.log(task);
             setError("Task not found");
             return;
           }
@@ -68,40 +77,41 @@ export default function EditTask({ open = true, onClose, projectId, taskId }) {
         deadline: deadline ? deadline.format("DD-MM-YYYY") : null,
         project: projectId,
       });
+
       if (res.data?.message === "updated") {
-        console.log("Task updated!");
-        window.location.reload();
+        setAlertType("success");
+        setError(res.data?.message);
+        handleSnackbarOpen();
+        setTasks((prev) =>
+          prev.map((task) =>
+            task._id === id
+              ? {
+                  ...task,
+                  title,
+                  description,
+                  status,
+                  deadline: deadline ? deadline.format("DD-MM-YYYY") : null,
+                }
+              : task
+          )
+        );
+        setTimeout(() => {
+          onClose();
+        }, 1000);
       }
     } catch (error) {
-      console.error("Fetch error:", error);
-
-      if (!error.response) {
-        setError("Network error: " + error.message);
-        return;
-      }
-
-      const { status, data } = error.response;
-
-      if (status === 404) {
-        setError(data?.message || "No tasks found for this project.");
-      } else if (status === 500) {
-        setError(data?.message || "Server error. Please try again later.");
-      } else {
-        setError("Something went wrong.");
-      }
+      handleerror(error, setError, navigate);
+      setAlertType("error");
+      handleSnackbarOpen();
     } finally {
       setLoading(false);
     }
   };
-  const handleBack = () => {
-    onClose();
-  };
-  return (
-    <Modal open={open} onClose={handleBack}>
-      <Container className="flex flex-col justify-center items-center bg-white ">
-        <p className=" font-semibold text-gray-800">Edit Task</p>
 
-        {error && <p className="text-red-500 text-sm">{error}</p>}
+  return (
+    <Modal open={open} onClose={onClose}>
+      <Container className="flex flex-col justify-center items-center bg-white p-6 rounded-md">
+        <p className="font-semibold text-gray-800 mb-4">Edit Task</p>
 
         <form className="space-y-4 w-full" onSubmit={handleSubmit}>
           <Input
@@ -134,6 +144,7 @@ export default function EditTask({ open = true, onClose, projectId, taskId }) {
               <MenuItem value="Done">Done</MenuItem>
             </Select>
           </FormControl>
+
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DatePicker
               label="Deadline"
@@ -142,13 +153,24 @@ export default function EditTask({ open = true, onClose, projectId, taskId }) {
               minDate={dayjs()}
             />
           </LocalizationProvider>
-          <div className="flex space-x-4">
-            <Button disabled={loading} onClick={handleSubmit}>
+
+          <div className="flex space-x-4 mt-4">
+            <Button disabled={loading} type="submit">
               {loading ? <CircularProgress size={30} /> : "Save Changes"}
             </Button>
-            <Button onClick={handleBack}>cancel </Button>
+            <Button onClick={onClose}>Cancel</Button>
           </div>
         </form>
+
+        {/* Snackbar */}
+        <Snackbar
+          anchorOrigin={{ vertical: "top", horizontal: "center" }}
+          open={snackbarOpen}
+          onClose={handleSnackbarClose}
+          autoHideDuration={2000}
+        >
+          <Alert severity={alertType}>{error}</Alert>
+        </Snackbar>
       </Container>
     </Modal>
   );

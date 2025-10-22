@@ -13,22 +13,13 @@ function Signup() {
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [pic, setPic] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [snackbarState, setSnackbarState] = useState({
-    open: false,
-  });
-  const [message, setMessage] = useState("");
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
 
-  const { open } = snackbarState;
-
-  const handleClick = () => {
-    setSnackbarState({ open: true });
-  };
-
-  const handleClose = () => {
-    setSnackbarState({ open: false });
-  };
+  const handleSnackbarOpen = () => setSnackbarOpen(true);
+  const handleSnackbarClose = () => setSnackbarOpen(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -36,32 +27,38 @@ function Signup() {
 
     try {
       setLoading(true);
-      const res = await signup({ email, password, username });
+      const formData = new FormData();
+      formData.append("email", email);
+      formData.append("username", username);
+      formData.append("password", password);
+      if (pic) formData.append("profilePic", pic);
+
+      const res = await signup(formData);
 
       if (res.data?.message === "User created") {
         setError(res.data?.message);
-        handleClick();
-        setTimeout(() => navigate("/Login"), 2000);
+        handleSnackbarOpen();
+        setTimeout(() => navigate("/Login"), 1000);
       } else {
         setError(res.data?.message || "Signup failed!");
       }
     } catch (error) {
       handleerror(error, setError, navigate);
-      handleClick();
+      handleSnackbarOpen();
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="flex flex-col justify-center items-center w-60 max-w-sm bg-white text-blue-600 rounded-md p-6 space-y-4 shadow-lg">
-        <p className="font-semibold text-center text-lg">Signup</p>
-
-        <form
-          className="flex flex-col space-y-4 w-full"
-          onSubmit={handleSubmit}
-        >
+    <div className="flex items-center justify-center min-h-screen ">
+      <div className="flex flex-col justify-center items-center max-w-sm rounded-md p-6 gap-3 w-full">
+        <p className="font-bold text-center text-xl ">Create New Account</p>
+        <p className=" text-justify text-xs text-gray-600">
+          Create a new Account
+        </p>
+        <form className="flex flex-col gap-3 w-full" onSubmit={handleSubmit}>
+          <p>Full Name</p>
           <Input
             type="text"
             placeholder="enter name"
@@ -70,6 +67,8 @@ function Signup() {
               setUsername(e.target.value);
             }}
           ></Input>
+          <p>Email</p>
+
           <Input
             type="text"
             placeholder="enter email"
@@ -78,6 +77,8 @@ function Signup() {
               setEmail(e.target.value);
             }}
           ></Input>
+          <p>Password</p>
+
           <Input
             type="password"
             placeholder="enter password"
@@ -87,24 +88,33 @@ function Signup() {
             }}
           ></Input>
 
-          <Button
-            variant="contained"
-            type="submit"
-            disabled={loading}
-            color="primary"
-          >
-            {loading ? <CircularProgress size={30} /> : "Sign up"}
-          </Button>
+          <p>Profile Picture (optional)</p>
+          <Input
+            type="file"
+            onChange={(e) => setPic(e.target.files[0])}
+          ></Input>
 
+          <Button variant="contained" type="submit" color="orangebutton">
+            {loading ? (
+              <CircularProgress size={30} />
+            ) : (
+              <p className="text-white text-xs">Create New Account</p>
+            )}
+          </Button>
+          <p className="text-center">Or</p>
+          <Button variant="outlined">
+            <p className="text-black text-xs">Continue with Google</p>
+          </Button>
           <Link href="/Login " className="text-center">
             Already have an account? Login
           </Link>
         </form>
       </div>
+      {/* Snackbar */}
       <Snackbar
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
-        open={open}
-        onClose={handleClose}
+        open={snackbarOpen}
+        onClose={handleSnackbarClose}
         message={error}
         autoHideDuration={1000}
       />

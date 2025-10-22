@@ -5,17 +5,26 @@ import Button from "@mui/material/Button";
 import { IconButton, Tab } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { handleerror } from "../api/handleError";
+
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
+import EditProject from "../components/EditProject";
+import CreateIcon from "@mui/icons-material/Create";
+import DeleteProject from "../components/DeleteProject";
+import CreateProject from "../components/CreateProject";
 
 function Project() {
   const navigate = useNavigate();
   const [error, setError] = useState("");
   const [project, setProject] = useState([]);
+  const [DelProject, setDelProject] = useState(null);
+  const [Edit, setEdit] = useState(null);
+  const [Create, setCreate] = useState(null);
+
   useEffect(() => {
     const fetchProjects = async () => {
       try {
@@ -39,48 +48,95 @@ function Project() {
   }, []);
 
   return (
-    <TableContainer className=" mt-2 md:mt-20">
-      <Table>
-        <div className="flex flex-col items-start space-y-2 ml-2">
-          <h1 className="text-lg font-bold">Projects</h1>
-
+    <TableContainer className=" mt-2 ">
+      <div className="m-5">
+        <div className="flex flex-row gap-6 mb-5">
+          <h1 className="text-2xl font-semibold">Projects</h1>
           <Button
-            variant="contained"
-            onClick={() => navigate("/createnewproject")}
+            variant="outlined"
+            onClick={() => {
+              setCreate({ project, setProject });
+            }}
             color="primary"
           >
             Create new Project
           </Button>
         </div>
-
-        {error && <p className="text-red-500 text-sm">{error}</p>}
-
-        {project.length > 0 ? (
-          project.map((proj) => (
-            <TableRow
-              key={proj._id}
-              className="flex items-center justify-start text-black "
-            >
-              <TableCell>
-                <Button
-                  variant="outlined"
-                  onClick={() => navigate(`/Tasks/${proj._id}`)}
-                  color="primary"
-                >
-                  {proj.title}
-                </Button>
-                <IconButton
-                  onClick={() => navigate(`/deleteProject/${proj._id}`)}
-                >
-                  <DeleteIcon />
-                </IconButton>{" "}
-              </TableCell>
+        <Table sx={{ minWidth: 650 }}>
+          <TableHead>
+            <TableRow className="bg-[#F5F5F5]">
+              <TableCell>Projects</TableCell>
+              <TableCell>Content</TableCell>
+              <TableCell align="right">Action</TableCell>
             </TableRow>
-          ))
-        ) : (
-          <p className="text-sm text-gray-500">No projects found</p>
+          </TableHead>
+          <TableBody>
+            {project.length > 0 ? (
+              project.map((proj) => (
+                <TableRow
+                  key={proj._id}
+                  className="flex items-center justify-start text-black "
+                >
+                  <TableCell>
+                    <Button
+                      variant="outlined"
+                      onClick={() => navigate(`/Tasks/${proj._id}`)}
+                      color="primary"
+                    >
+                      {proj.title}
+                    </Button>
+                  </TableCell>
+                  <TableCell>
+                    <p>{proj.content}</p>
+                  </TableCell>
+                  <TableCell align="right">
+                    <IconButton
+                      onClick={() =>
+                        setDelProject({ projectId: proj._id, setProject })
+                      }
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                    <IconButton
+                      onClick={() =>
+                        setEdit({ projectId: proj._id, setProject })
+                      }
+                    >
+                      <CreateIcon />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <p className="text-sm text-gray-500">No projects found</p>
+            )}
+          </TableBody>
+        </Table>
+        {Edit && (
+          <EditProject
+            open={true}
+            projectId={Edit.projectId}
+            onClose={() => setEdit(null)}
+            setProject={Edit.setProject}
+          />
         )}
-      </Table>
+        {DelProject && (
+          <DeleteProject
+            open={true}
+            projectId={DelProject.projectId}
+            onClose={() => setDelProject(null)}
+            setProject={DelProject.setProject}
+          />
+        )}
+      </div>
+      {Create && (
+        <CreateProject
+          open={true}
+          project={Create.project}
+          onClose={() => setCreate(null)}
+          setProject={Create.setProject}
+        />
+      )}
     </TableContainer>
   );
 }

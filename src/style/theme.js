@@ -9,6 +9,9 @@ const theme = createTheme({
     deletebutton: {
       main: red[400],
     },
+    orangebutton: {
+      main: "#E94E1A",
+    },
   },
   components: {
     MuiContainer: {
@@ -36,6 +39,22 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           fontSize: "0.9rem",
+        },
+      },
+    },
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          textTransform: "none",
+        },
+      },
+    },
+    MuiModal: {
+      styleOverrides: {
+        root: {
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
         },
       },
     },

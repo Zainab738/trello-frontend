@@ -2,36 +2,63 @@ import Tasks from "./pages/Tasks";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Project from "./pages/Project";
-import "./App.css";
 import CreateNewProject from "./pages/CreateNewProject";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import Navbar from "./components/Navbar";
-import DelProject from "./pages/DelProject";
-import { Navigate } from "react-router-dom";
-import ProtectedRoute from "../src/ProtectedRoute";
-import ProtectedRoutelogin from "../src/ProtectedRoutelogin";
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  Navigate,
+  useLocation,
+} from "react-router-dom";
+import ProtectedRoute from "./ProtectedRoutes/ProtectedRoute";
+import ProtectedRoutelogin from "./ProtectedRoutes/ProtectedRoutelogin";
+import ResetPassword from "./pages/ResetPassword";
+import VerifyPassword from "./pages/VerifyPassword";
+import UpdatePassword from "./pages/UpdatePassword";
+import PasswordResetSuccess from "./pages/PasswordResetSuccess";
+import Navbar from "../src/components/Navbar";
+function FileRoutesInner() {
+  const location = useLocation();
 
-function fileRoutes() {
   return (
     <>
-      <Router>
-        {<Navbar />}
-        <Routes>
-          <Route element={<ProtectedRoute />}>
-            <Route path="/" element={<Project />} />
-            <Route path="/Tasks/:projectId" element={<Tasks />} />
-            <Route path="/createnewproject" element={<CreateNewProject />} />
-            <Route path="/deleteproject/:id" element={<DelProject />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Route>
-          <Route element={<ProtectedRoutelogin />}>
-            <Route path="/Signup" element={<Signup />} />
-            <Route path="/Login" element={<Login />} />
-          </Route>
-        </Routes>
-      </Router>
+      {location.pathname !== "/Login" &&
+        location.pathname !== "/Signup" &&
+        location.pathname !== "/ResetPassword" &&
+        location.pathname !== "/VerifyPassword" &&
+        location.pathname !== "/PasswordResetSuccess" &&
+        location.pathname !== "/UpdatePassword" && <Navbar />}
+
+      <Routes>
+        <Route element={<ProtectedRoute />}>
+          <Route path="/" element={<Project />} />
+          <Route path="/Tasks/:projectId" element={<Tasks />} />
+          <Route path="/createnewproject" element={<CreateNewProject />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Route>
+        <Route element={<ProtectedRoutelogin />}>
+          <Route path="/Signup" element={<Signup />} />
+          <Route path="/Login" element={<Login />} />
+          <Route path="/ResetPassword" element={<ResetPassword />} />
+          <Route path="/VerifyPassword" element={<VerifyPassword />} />
+          <Route path="/UpdatePassword" element={<UpdatePassword />} />
+
+          <Route
+            path="/PasswordResetSuccess"
+            element={<PasswordResetSuccess />}
+          />
+        </Route>
+      </Routes>
     </>
   );
 }
 
-export default fileRoutes;
+function FileRoutes() {
+  return (
+    <Router>
+      <FileRoutesInner />
+    </Router>
+  );
+}
+
+export default FileRoutes;
