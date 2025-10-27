@@ -113,6 +113,7 @@ function Signup() {
           <p>Profile Picture (optional)</p>
           <Input
             type="file"
+            accept=".png, .jpg, .jpeg"
             onChange={(e) => setPic(e.target.files[0])}
           ></Input>
 
