@@ -8,6 +8,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import { useState } from "react";
 import Link from "@mui/material/Link";
 import LoginValidation from "../validation/LoginValidation";
+import Alert from "@mui/material/Alert";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -15,6 +16,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [error, setError] = useState("");
+  const [alertType, setAlertType] = useState("");
 
   const navigate = useNavigate();
 
@@ -35,6 +37,7 @@ export default function Login() {
         const messages = validationError.inner
           .map((err) => err.message)
           .join(", ");
+        setAlertType("error");
         setError(messages);
         handleSnackbarOpen();
         return;
@@ -49,15 +52,18 @@ export default function Login() {
 
       if (res.data?.message === "login success") {
         setError(res.data?.message);
+        setAlertType("success");
         handleSnackbarOpen();
         setTimeout(() => navigate("/"), 2000);
       } else {
         setError(res.data?.message || "Login failed!");
+        setAlertType("error");
         handleSnackbarOpen();
       }
     } catch (err) {
       const message =
         err.response?.data?.message || err.message || "Something went wrong!";
+      setAlertType("error");
       setError(message);
       handleSnackbarOpen();
     } finally {
@@ -85,7 +91,7 @@ export default function Login() {
           <div className="flex justify-between items-center">
             <p>Password</p>
             <Link
-              href="/VerifyPassword"
+              href="/ResetPassword"
               sx={{ color: "red", textDecoration: "none" }}
             >
               Forgot password?
@@ -112,13 +118,15 @@ export default function Login() {
         </form>
       </div>
 
+      {/* Snackbar */}
       <Snackbar
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
         open={snackbarOpen}
         onClose={handleSnackbarClose}
-        message={error}
-        autoHideDuration={3000}
-      />
+        autoHideDuration={2000}
+      >
+        <Alert severity={alertType}>{error}</Alert>
+      </Snackbar>
     </div>
   );
 }

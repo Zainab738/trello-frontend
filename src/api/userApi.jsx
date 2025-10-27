@@ -21,3 +21,6 @@ export const login = (data) => {
 export const getUser = () => {
   return userApi.get("/getUser");
 };
+// send password reset email
+export const sendResetPasswordEmail = (email) =>
+  userApi.post("/ResetPassword", { email });

@@ -4,12 +4,25 @@ import Button from "@mui/material/Button";
 import { Input } from "@mui/material";
 import Link from "@mui/material/Link";
 import CircularProgress from "@mui/material/CircularProgress";
-
+import { useSearchParams } from "react-router-dom";
+import { sendResetPasswordEmail } from "../api/userApi";
 function ResetPassword() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [searchParams] = useSearchParams();
+  const token = searchParams.get("token");
+  const [message, setMessage] = useState("");
+
+  const handleSendEmail = async () => {
+    try {
+      const res = await sendResetPasswordEmail(email);
+      if (res.data.message == "Reset email sent successfully")
+        console.log(res.data.message);
+      setMessage(res.data.message);
+    } catch (err) {
+      console.error(err.response?.data?.message || err);
+    }
+  };
 
   return (
     <div className="flex items-center justify-center min-h-screen ">
@@ -20,37 +33,33 @@ function ResetPassword() {
           password. You will receive a password reset link.
         </p>
 
-        <form className="flex flex-col gap-3 w-full">
-          <Input
-            type="text"
-            placeholder="enter email"
-            value={email}
-            onChange={(e) => {
-              setEmail(e.target.value);
-            }}
-          ></Input>
+        <Input
+          type="text"
+          placeholder="enter email"
+          value={email}
+          onChange={(e) => {
+            setEmail(e.target.value);
+          }}
+        ></Input>
 
-          <Button
-            variant="contained"
-            type="submit"
-            disabled={loading}
-            color="orangebutton"
-          >
-            {loading ? (
-              <CircularProgress size={30} />
-            ) : (
-              <p className="text-white text-xs">Send Link</p>
-            )}
-          </Button>
-
-          <Link
-            href="/Login "
-            sx={{ color: "black", textDecoration: "none" }}
-            className="text-center"
-          >
-            Back to login
-          </Link>
-        </form>
+        <Button
+          variant="contained"
+          color="orangebutton"
+          onClick={() => {
+            handleSendEmail();
+          }}
+          fullWidth
+        >
+          <p className="text-white text-sm">Send Link</p>
+        </Button>
+        <p>{message}</p>
+        <Link
+          href="/Login "
+          sx={{ color: "black", textDecoration: "none" }}
+          className="text-center"
+        >
+          Back to login
+        </Link>
       </div>
     </div>
   );

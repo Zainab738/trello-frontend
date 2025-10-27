@@ -17,6 +17,8 @@ import VerifyPassword from "./pages/VerifyPassword";
 import UpdatePassword from "./pages/UpdatePassword";
 import PasswordResetSuccess from "./pages/PasswordResetSuccess";
 import Navbar from "../src/components/Navbar";
+import VerificationSuccess from "./pages/VerificationSuccess";
+
 function FileRoutesInner() {
   const location = useLocation();
 
@@ -27,22 +29,27 @@ function FileRoutesInner() {
         location.pathname !== "/ResetPassword" &&
         location.pathname !== "/VerifyPassword" &&
         location.pathname !== "/PasswordResetSuccess" &&
-        location.pathname !== "/UpdatePassword" && <Navbar />}
+        location.pathname !== "/UpdatePassword" &&
+        location.pathname !== "/verification-success" && <Navbar />}
 
       <Routes>
         <Route element={<ProtectedRoute />}>
           <Route path="/" element={<Project />} />
           <Route path="/Tasks/:projectId" element={<Tasks />} />
           <Route path="/createnewproject" element={<CreateNewProject />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
+
+          {/* /<Route path="*" element={<Navigate to="/" replace />} /> */}
         </Route>
         <Route element={<ProtectedRoutelogin />}>
           <Route path="/Signup" element={<Signup />} />
+          <Route
+            path="/verification-success"
+            element={<VerificationSuccess />}
+          />
           <Route path="/Login" element={<Login />} />
           <Route path="/ResetPassword" element={<ResetPassword />} />
           <Route path="/VerifyPassword" element={<VerifyPassword />} />
           <Route path="/UpdatePassword" element={<UpdatePassword />} />
-
           <Route
             path="/PasswordResetSuccess"
             element={<PasswordResetSuccess />}

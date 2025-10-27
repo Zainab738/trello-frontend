@@ -6,6 +6,9 @@ const theme = createTheme({
     primary: {
       main: "#6C6FF1",
     },
+    header: {
+      main: "#F5F5F5",
+    },
     deletebutton: {
       main: red[400],
     },
@@ -28,7 +31,7 @@ const theme = createTheme({
     MuiCard: {
       styleOverrides: {
         root: {
-          color: "white",
+          //color: "white",
           border: "1px solid white",
           backgroundColor: "transparent",
           borderRadius: "10px",
@@ -55,6 +58,13 @@ const theme = createTheme({
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
+        },
+      },
+    },
+    MuiAppBar: {
+      styleOverrides: {
+        root: {
+          boxShadow: "none",
         },
       },
     },

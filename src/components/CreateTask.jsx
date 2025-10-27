@@ -22,6 +22,7 @@ import dayjs from "dayjs";
 import { CircularProgress } from "@mui/material";
 import { handleerror } from "../api/handleError";
 import Alert from "@mui/material/Alert";
+import TaskValidation from "../validation/TaskValidation";
 
 export default function CreateTask({
   open = true,
@@ -45,6 +46,22 @@ export default function CreateTask({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    try {
+      await TaskValidation.validate(
+        { title, description, status, deadline },
+        { abortEarly: false }
+      );
+    } catch (validationError) {
+      if (validationError) {
+        const messages = validationError.inner
+          .map((err) => err.message)
+          .join(", ");
+        setAlertType("error");
+        setError(messages);
+        handleSnackbarOpen();
+        return;
+      }
+    }
     setError("");
     setLoading(true);
 

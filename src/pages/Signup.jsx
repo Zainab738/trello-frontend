@@ -7,6 +7,8 @@ import Link from "@mui/material/Link";
 import CircularProgress from "@mui/material/CircularProgress";
 import { handleerror } from "../api/handleError";
 import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
+import SignupValidation from "../validation/SignupValidation";
 
 function Signup() {
   const navigate = useNavigate();
@@ -17,6 +19,7 @@ function Signup() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [alertType, setAlertType] = useState("");
 
   const handleSnackbarOpen = () => setSnackbarOpen(true);
   const handleSnackbarClose = () => setSnackbarOpen(false);
@@ -24,7 +27,22 @@ function Signup() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-
+    try {
+      await SignupValidation.validate(
+        { email, password, username },
+        { abortEarly: false }
+      );
+    } catch (validationError) {
+      if (validationError) {
+        const messages = validationError.inner
+          .map((err) => err.message)
+          .join(", ");
+        setAlertType("error");
+        setError(messages);
+        handleSnackbarOpen();
+        return;
+      }
+    }
     try {
       setLoading(true);
       const formData = new FormData();
@@ -37,13 +55,17 @@ function Signup() {
 
       if (res.data?.message === "User created") {
         setError(res.data?.message);
+        setAlertType("success");
         handleSnackbarOpen();
         setTimeout(() => navigate("/Login"), 1000);
       } else {
+        setAlertType("error");
         setError(res.data?.message || "Signup failed!");
+        handleSnackbarOpen();
       }
     } catch (error) {
       handleerror(error, setError, navigate);
+      setAlertType("error");
       handleSnackbarOpen();
     } finally {
       setLoading(false);
@@ -115,9 +137,10 @@ function Signup() {
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
         open={snackbarOpen}
         onClose={handleSnackbarClose}
-        message={error}
-        autoHideDuration={1000}
-      />
+        autoHideDuration={2000}
+      >
+        <Alert severity={alertType}>{error}</Alert>
+      </Snackbar>
     </div>
   );
 }

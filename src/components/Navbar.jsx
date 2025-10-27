@@ -31,8 +31,11 @@ function Navbar() {
     <div>
       <AppBar
         position="static"
-        color="primary"
-        className="p-4 flex  items-start"
+        color="header"
+        className="p-2 flex  items-start"
+        sx={{
+          borderBottom: "2px solid #dedede",
+        }}
       >
         <Button onClick={() => setIsOpen(!isOpen)}>
           {user?.profilePic ? (
@@ -43,25 +46,29 @@ function Navbar() {
             />
           ) : (
             <AccountCircleIcon
-              sx={{ color: "white", fontSize: "3rem" }}
+              sx={{ color: "primary", fontSize: "3rem" }}
             ></AccountCircleIcon>
           )}
         </Button>
       </AppBar>
 
       {isOpen && (
-        <ol className="flex flex-col  space-y-4  text-md bg-[#6C6FF1] text-white p-5 font-semibold w-full items-start justify-start">
-          <li>
-            <Button onClick={() => navigate("/")} color="white">
-              Home
-            </Button>
-          </li>
-          <li>
-            <Button onClick={handleLogout} color="white">
-              Logout
-            </Button>
-          </li>
-        </ol>
+        <div className=" ml-2  bg-[#F5F5F5] shadow-md rounded-lg p-4 w-30 flex flex-col space-y-2 text-black font-semibold ">
+          <Button
+            onClick={() => navigate("/")}
+            fullWidth
+            sx={{ justifyContent: "flex-start", color: "black" }}
+          >
+            Home
+          </Button>
+          <Button
+            onClick={handleLogout}
+            fullWidth
+            sx={{ justifyContent: "flex-start", color: "black" }}
+          >
+            Logout
+          </Button>
+        </div>
       )}
     </div>
   );

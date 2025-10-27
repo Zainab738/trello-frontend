@@ -4,6 +4,7 @@ import { createProject } from "../api/projectApi";
 import { TextField, Input, Button } from "@mui/material";
 import { CircularProgress } from "@mui/material";
 import { handleerror } from "../api/handleError";
+import ProjectValidation from "../validation/ProjectValidation";
 
 function createNewProject() {
   const navigate = useNavigate();
@@ -14,6 +15,22 @@ function createNewProject() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    try {
+      await ProjectValidation.validate(
+        { title, content },
+        { abortEarly: false }
+      );
+    } catch (validationError) {
+      if (validationError) {
+        const messages = validationError.inner
+          .map((err) => err.message)
+          .join(", ");
+        setAlertType("error");
+        setError(messages);
+        handleSnackbarOpen();
+        return;
+      }
+    }
     setError("");
     try {
       setLoading(true);
