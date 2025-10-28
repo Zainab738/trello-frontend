@@ -9,6 +9,7 @@ import { handleerror } from "../api/handleError";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import SignupValidation from "../validation/SignupValidation";
+import InputBase from "@mui/material/InputBase";
 
 function Signup() {
   const navigate = useNavigate();
@@ -111,11 +112,11 @@ function Signup() {
           ></Input>
 
           <p>Profile Picture (optional)</p>
-          <Input
+          <InputBase
             type="file"
-            accept=".png, .jpg, .jpeg"
+            inputProps={{ accept: ".png, .jpg, .jpeg" }}
             onChange={(e) => setPic(e.target.files[0])}
-          ></Input>
+          />
 
           <Button variant="contained" type="submit" color="orangebutton">
             {loading ? (
