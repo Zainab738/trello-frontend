@@ -144,10 +144,16 @@ export default function CreateTask({
             />
           </LocalizationProvider>
           <div className="flex space-x-4">
-            <Button disabled={loading} onClick={handleSubmit}>
+            <Button
+              disabled={loading}
+              onClick={handleSubmit}
+              color="orangebutton"
+            >
               {loading ? <CircularProgress size={30} /> : "Save Changes"}
             </Button>
-            <Button onClick={handleBack}>cancel </Button>
+            <Button onClick={handleBack} color="deletebutton">
+              cancel{" "}
+            </Button>
           </div>
           {/* Snackbar */}
           <Snackbar

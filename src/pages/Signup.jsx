@@ -55,7 +55,7 @@ function Signup() {
       const res = await signup(formData);
 
       if (res.data?.message === "User created") {
-        setError(res.data?.message);
+        setError("User created check your email to verify");
         setAlertType("success");
         handleSnackbarOpen();
         setTimeout(() => navigate("/Login"), 1000);

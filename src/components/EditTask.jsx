@@ -155,10 +155,12 @@ export default function EditTask({
           </LocalizationProvider>
 
           <div className="flex space-x-4 mt-4">
-            <Button disabled={loading} type="submit">
+            <Button disabled={loading} type="submit" color="orangebutton">
               {loading ? <CircularProgress size={30} /> : "Save Changes"}
             </Button>
-            <Button onClick={onClose}>Cancel</Button>
+            <Button onClick={onClose} color="deletebutton">
+              Cancel
+            </Button>
           </div>
         </form>
 

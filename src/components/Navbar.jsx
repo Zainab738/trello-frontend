@@ -67,7 +67,7 @@ function Navbar() {
               />
             ) : (
               <AccountCircleIcon
-                sx={{ color: "primary", fontSize: "3rem" }}
+                sx={{ color: "orangebutton.main", fontSize: "3rem" }}
               ></AccountCircleIcon>
             )}
           </Button>

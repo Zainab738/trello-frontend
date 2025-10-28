@@ -70,7 +70,7 @@ function createNewProject() {
                 setContent(e.target.value);
               }}
             ></TextField>
-            <Button type="submit" disabled={loading} color="primary">
+            <Button type="submit" disabled={loading} color="orangebutton">
               {loading ? <CircularProgress size={30} /> : "Submit"}
             </Button>
             {error && <div className="text-sm text-red-500">{error}</div>}

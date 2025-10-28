@@ -56,7 +56,7 @@ function Project() {
             onClick={() => {
               setCreate({ project, setProject });
             }}
-            color="primary"
+            color="orangebutton"
           >
             Create new Project
           </Button>
@@ -80,7 +80,7 @@ function Project() {
                     <Button
                       variant="outlined"
                       onClick={() => navigate(`/Tasks/${proj._id}`)}
-                      color="primary"
+                      color="orangebutton"
                     >
                       {proj.title}
                     </Button>

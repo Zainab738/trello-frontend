@@ -106,7 +106,11 @@ export default function Login() {
           />
 
           <Button variant="contained" type="submit" color="orangebutton">
-            {loading ? <CircularProgress size={30} /> : "Login"}
+            {loading ? (
+              <CircularProgress size={30} />
+            ) : (
+              <p className=" text-white">Login </p>
+            )}
           </Button>
 
           <p className="text-center">Or</p>

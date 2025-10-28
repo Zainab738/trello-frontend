@@ -64,7 +64,11 @@ export default function DeleteTask({
         </p>
 
         <div className="flex space-x-4">
-          <Button onClick={handleDelete} disabled={loading}>
+          <Button
+            onClick={handleDelete}
+            disabled={loading}
+            color="orangebutton"
+          >
             {loading ? "Deleting..." : "Yes, delete"}
           </Button>
 

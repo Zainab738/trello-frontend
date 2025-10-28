@@ -55,12 +55,16 @@ export default function DeleteTask({
   return (
     <Modal open={open} onClose={handleBack}>
       <Container className="flex flex-col justify-center items-center bg-white ">
-        <p className=" font-semibold text-gray-800">
+        <p className=" font-semibold text-gray-800 ">
           Are you sure you want to delete this task?
         </p>
 
         <div className="flex space-x-4">
-          <Button onClick={handleDelete} disabled={loading}>
+          <Button
+            onClick={handleDelete}
+            disabled={loading}
+            color="orangebutton"
+          >
             {loading ? "Deleting..." : "Yes, delete"}
           </Button>
 
