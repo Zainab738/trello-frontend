@@ -6,7 +6,6 @@ import { useEffect } from "react";
 import { TextField, Input, Button, Snackbar } from "@mui/material";
 import Alert from "@mui/material/Alert";
 import { CircularProgress } from "@mui/material";
-import { handleerror } from "../api/handleError";
 import { getProject, updateProject } from "../api/projectApi";
 
 export default function EditTask({
@@ -44,8 +43,8 @@ export default function EditTask({
           setTitle(project.title);
           setContent(project.content);
         }
-      } catch (error) {
-        handleerror(error, setError, navigate);
+      } catch (err) {
+        setError(err.message || "Failed to fetch project");
       }
     };
     fetchTask();
@@ -79,9 +78,9 @@ export default function EditTask({
           onClose();
         }, 1000);
       }
-    } catch (error) {
+    } catch (err) {
       setAlertType("error");
-      handleerror(error, setError, navigate);
+      setError(err.message || "Failed to edit project");
       handleSnackbarOpen();
     } finally {
       setLoading(false);

@@ -3,7 +3,6 @@ import { getTasks, updateTasks } from "../api/taskApi";
 import { useNavigate, useParams } from "react-router-dom";
 import TaskColumn from "../components/TaskColumn";
 import { Button, IconButton } from "@mui/material";
-import { handleerror } from "../api/handleError";
 import CreateTask from "../components/CreateTask";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { getProject } from "../api/projectApi";
@@ -32,6 +31,7 @@ export default function Task() {
     const fetchTasks = async () => {
       try {
         const res = await getTasks(projectId);
+
         if (
           res.data?.message === "Tasks fetched successfully" ||
           res.data?.message === "No tasks yet"
@@ -40,6 +40,7 @@ export default function Task() {
         } else {
           setError("Unexpected response from server");
         }
+
         const projectRes = await getProject();
         if (projectRes.data?.project) {
           const currentProject = projectRes.data.project.find(
@@ -49,10 +50,11 @@ export default function Task() {
             currentProject ? currentProject.title : "Unknown Project"
           );
         }
-      } catch (error) {
-        handleerror(error, setError, navigate);
+      } catch (err) {
+        setError(err.message || "Failed to fetch tasks");
       }
     };
+
     fetchTasks();
   }, [projectId]);
 

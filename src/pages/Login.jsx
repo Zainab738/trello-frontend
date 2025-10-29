@@ -28,43 +28,27 @@ export default function Login() {
     setError("");
 
     try {
-      await LoginValidation.validate(
-        { email, password },
-        { abortEarly: false }
-      );
-    } catch (validationError) {
-      if (validationError) {
-        const messages = validationError.inner
-          .map((err) => err.message)
-          .join(", ");
-        setAlertType("error");
-        setError(messages);
-        handleSnackbarOpen();
-        return;
-      }
-    }
-
-    try {
       setLoading(true);
+
       const res = await login({ email, password });
 
-      if (res.data?.token) localStorage.setItem("token", res.data.token);
+      if (res?.data?.token) {
+        localStorage.setItem("token", res.data.token);
+      }
 
-      if (res.data?.message === "login success") {
-        setError(res.data?.message);
+      if (res?.data?.message === "login success") {
         setAlertType("success");
+        setError("Login successful!");
         handleSnackbarOpen();
-        setTimeout(() => navigate("/"), 2000);
+        setTimeout(() => navigate("/"), 1500);
       } else {
-        setError(res.data?.message || "Login failed!");
         setAlertType("error");
+        setError(res?.data?.message || "Login failed!");
         handleSnackbarOpen();
       }
     } catch (err) {
-      const message =
-        err.response?.data?.message || err.message || "Something went wrong!";
       setAlertType("error");
-      setError(message);
+      setError(err?.message || "Wrong username or password");
       handleSnackbarOpen();
     } finally {
       setLoading(false);

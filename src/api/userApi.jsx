@@ -1,7 +1,9 @@
 import axios from "axios";
 
-const userApi = axios.create({ baseURL: "http://localhost:3000/users" });
-
+const userApi = axios.create({
+  baseURL: "http://localhost:3000/users",
+});
+//token
 userApi.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
   if (token) {
@@ -9,18 +11,51 @@ userApi.interceptors.request.use((config) => {
   }
   return config;
 });
-//signup
-export const signup = (data) => {
-  return userApi.post("/signup", data);
-};
-//login
-export const login = (data) => {
-  return userApi.post("/login", data);
-};
-//getuser
-export const getUser = () => {
-  return userApi.get("/getUser");
-};
+//error
+userApi.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    let message = "Something went wrong!";
+    const { response } = error;
+
+    if (!response) {
+      message = "Network error: " + error.message;
+      return Promise.reject({ message });
+    }
+
+    const { status, data } = response;
+
+    if (status === 500) {
+      message = data?.error?.errorResponse?.errmsg || "Server error";
+    } else if (status === 401) {
+      localStorage.removeItem("token");
+      message = data?.message || "Unauthorized";
+      return Promise.reject({ message });
+    } else if (status === 400) {
+      if (Array.isArray(data?.error?.errors)) {
+        message = data.error.errors.join(" , ");
+      } else {
+        message = data?.message || data?.error?.message || "Validation failed";
+      }
+    } else {
+      message = data?.message || message;
+    }
+
+    return Promise.reject({ message });
+  }
+);
+
+// signup
+export const signup = (data) => userApi.post("/signup", data);
+
+// login
+export const login = (data) => userApi.post("/login", data);
+
+// get user
+export const getUser = () => userApi.get("/getUser");
+
 // send password reset email
 export const sendResetPasswordEmail = (email) =>
   userApi.post("/ResetPassword", { email });
+
+export default userApi;

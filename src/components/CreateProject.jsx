@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { createProject } from "../api/projectApi";
 import { TextField, Input, Button, Snackbar } from "@mui/material";
 import { CircularProgress } from "@mui/material";
-import { handleerror } from "../api/handleError";
 import Modal from "@mui/material/Modal";
 import Container from "@mui/material/Container";
 import Alert from "@mui/material/Alert";
@@ -40,9 +39,9 @@ export default function CreateProject({ open = true, onClose, setProject }) {
         setError(res.data?.message || "Project creation failed!");
         handleSnackbarOpen();
       }
-    } catch (error) {
+    } catch (err) {
       setAlertType("error");
-      handleerror(error, setError, navigate);
+      setError(err.message || "Failed to create task");
       handleSnackbarOpen();
     } finally {
       setLoading(false);

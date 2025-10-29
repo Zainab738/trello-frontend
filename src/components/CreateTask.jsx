@@ -20,7 +20,6 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import { CircularProgress } from "@mui/material";
-import { handleerror } from "../api/handleError";
 import Alert from "@mui/material/Alert";
 import TaskValidation from "../validation/TaskValidation";
 
@@ -87,9 +86,9 @@ export default function CreateTask({
         setError(res.data?.message || "Task creation failed!");
         handleSnackbarOpen();
       }
-    } catch (error) {
+    } catch (err) {
       setAlertType("error");
-      handleerror(error, setError, navigate);
+      setError(err.message || "Failed to create task");
       handleSnackbarOpen();
     } finally {
       setLoading(false);

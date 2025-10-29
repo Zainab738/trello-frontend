@@ -4,7 +4,6 @@ import { Button, Snackbar } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import Container from "@mui/material/Container";
 import { deleteProject } from "../api/projectApi";
-import { handleerror } from "../api/handleError";
 import Alert from "@mui/material/Alert";
 
 export default function DeleteTask({
@@ -44,9 +43,9 @@ export default function DeleteTask({
         setError("Unexpected response from server");
         handleSnackbarOpen();
       }
-    } catch (error) {
+    } catch (err) {
       setAlertType("error");
-      handleerror(error, setError, navigate);
+      setError(err.message || "Failed to delete project");
       handleSnackbarOpen();
     } finally {
       setLoading(false);

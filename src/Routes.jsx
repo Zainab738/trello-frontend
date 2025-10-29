@@ -2,7 +2,6 @@ import Tasks from "./pages/Tasks";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Project from "./pages/Project";
-import CreateNewProject from "./pages/CreateNewProject";
 import {
   BrowserRouter as Router,
   Route,
@@ -34,7 +33,6 @@ function FileRoutesInner() {
         <Route element={<ProtectedRoute />}>
           <Route path="/" element={<Project />} />
           <Route path="/Tasks/:projectId" element={<Tasks />} />
-          <Route path="/createnewproject" element={<CreateNewProject />} />
           /<Route path="*" element={<Navigate to="/" replace />} />
         </Route>
         <Route element={<ProtectedRoutelogin />}>

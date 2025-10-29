@@ -5,7 +5,6 @@ import Button from "@mui/material/Button";
 import { Input } from "@mui/material";
 import Link from "@mui/material/Link";
 import CircularProgress from "@mui/material/CircularProgress";
-import { handleerror } from "../api/handleError";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import SignupValidation from "../validation/SignupValidation";
@@ -28,22 +27,22 @@ function Signup() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+
     try {
       await SignupValidation.validate(
         { email, password, username },
         { abortEarly: false }
       );
     } catch (validationError) {
-      if (validationError) {
-        const messages = validationError.inner
-          .map((err) => err.message)
-          .join(", ");
-        setAlertType("error");
-        setError(messages);
-        handleSnackbarOpen();
-        return;
-      }
+      const messages = validationError.inner
+        .map((err) => err.message)
+        .join(", ");
+      setAlertType("error");
+      setError(messages);
+      handleSnackbarOpen();
+      return;
     }
+
     try {
       setLoading(true);
       const formData = new FormData();
@@ -55,18 +54,14 @@ function Signup() {
       const res = await signup(formData);
 
       if (res.data?.message === "User created") {
-        setError("User created check your email to verify");
+        setError("User created! Check your email to verify.");
         setAlertType("success");
         handleSnackbarOpen();
         setTimeout(() => navigate("/Login"), 1000);
-      } else {
-        setAlertType("error");
-        setError(res.data?.message || "Signup failed!");
-        handleSnackbarOpen();
       }
     } catch (error) {
-      handleerror(error, setError, navigate);
       setAlertType("error");
+      setError(error.message || "Signup failed!");
       handleSnackbarOpen();
     } finally {
       setLoading(false);

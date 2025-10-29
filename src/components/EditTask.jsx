@@ -18,7 +18,6 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import { getTasks, updateTasks } from "../api/taskApi";
-import { handleerror } from "../api/handleError";
 import Alert from "@mui/material/Alert";
 
 export default function EditTask({
@@ -58,8 +57,10 @@ export default function EditTask({
           setStatus(task.status);
           setDeadline(dayjs(task.deadline, "DD-MM-YYYY"));
         }
-      } catch (error) {
-        handleerror(error, setError, navigate);
+      } catch (err) {
+        setError(err.message || "Failed to load task");
+        setAlertType("error");
+        handleSnackbarOpen();
       }
     };
     fetchTask();
@@ -99,9 +100,9 @@ export default function EditTask({
           onClose();
         }, 1000);
       }
-    } catch (error) {
-      handleerror(error, setError, navigate);
+    } catch (err) {
       setAlertType("error");
+      setError(err.message || "Failed to update task");
       handleSnackbarOpen();
     } finally {
       setLoading(false);

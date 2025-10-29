@@ -4,7 +4,6 @@ import { getProject } from "../api/projectApi";
 import Button from "@mui/material/Button";
 import { IconButton, Tab } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { handleerror } from "../api/handleError";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -38,8 +37,8 @@ function Project() {
         } else {
           setError("Unexpected response from server");
         }
-      } catch (error) {
-        handleerror(error, setError, navigate);
+      } catch (err) {
+        setError(err.message || "Failed to fetch project");
       }
     };
 
