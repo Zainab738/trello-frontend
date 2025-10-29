@@ -28,6 +28,7 @@ projectApi.interceptors.response.use(
       message = data?.error?.errorResponse?.errmsg || "Server error";
     } else if (status === 401) {
       localStorage.removeItem("token");
+      message = "session expired login again";
       return;
     } else if (status === 400) {
       if (Array.isArray(data?.error?.errors)) {

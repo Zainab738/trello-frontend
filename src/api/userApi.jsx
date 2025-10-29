@@ -28,8 +28,7 @@ userApi.interceptors.response.use(
     if (status === 500) {
       message = data?.error?.errorResponse?.errmsg || "Server error";
     } else if (status === 401) {
-      localStorage.removeItem("token");
-      message = data?.message || "Unauthorized";
+      message = data?.message;
       return Promise.reject({ message });
     } else if (status === 400) {
       if (Array.isArray(data?.error?.errors)) {
