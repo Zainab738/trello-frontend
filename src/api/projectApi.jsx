@@ -58,3 +58,7 @@ export const deleteProject = (id) => {
 export const updateProject = (id, data) => {
   return projectApi.patch(`/update/${id}`, data);
 };
+//getoneproject
+export const getoneproject = (id) => {
+  return projectApi.get(`/getoneproject/${id}`);
+};

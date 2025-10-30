@@ -5,7 +5,7 @@ import TaskColumn from "../components/TaskColumn";
 import { Button, IconButton } from "@mui/material";
 import CreateTask from "../components/CreateTask";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { getProject } from "../api/projectApi";
+import { getoneproject } from "../api/projectApi";
 import {
   DndContext,
   closestCorners,
@@ -41,15 +41,11 @@ export default function Task() {
           setError("Unexpected response from server");
         }
 
-        const projectRes = await getProject();
-        if (projectRes.data?.project) {
-          const currentProject = projectRes.data.project.find(
-            (p) => p._id === projectId
-          );
-          setProjectName(
-            currentProject ? currentProject.title : "Unknown Project"
-          );
-        }
+        const projectRes = await getoneproject(projectId);
+        const currentProject = projectRes.data.project;
+        setProjectName(
+          currentProject ? currentProject.title : "Unknown Project"
+        );
       } catch (err) {
         setError(err.message || "Failed to fetch tasks");
       }
@@ -59,9 +55,13 @@ export default function Task() {
   }, [projectId]);
 
   const handleMove = async (task, newStatus) => {
+    console.log("task", task);
+    console.log("new status", newStatus);
+
     const updatedTasks = tasks.map((t) =>
       t._id === task._id ? { ...t, status: newStatus } : t
     );
+    console.log("updated task", updatedTasks);
     setTasks(updatedTasks);
     await updateTasks(task._id, { ...task, status: newStatus });
   };
