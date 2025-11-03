@@ -16,8 +16,7 @@ taskApi.interceptors.response.use(
   (response) => response,
   (error) => {
     let message = "Something went wrong!";
-    const { response } = error;
-
+    const response = error.response;
     if (!response) {
       message = error.message || "network error";
       return Promise.reject({ message });
@@ -30,7 +29,7 @@ taskApi.interceptors.response.use(
     } else if (status === 401) {
       localStorage.removeItem("token");
       message = "session expired login again";
-      return;
+      return Promise.reject({ message });
     } else if (status === 400) {
       if (Array.isArray(data?.error?.errors)) {
         message = data.error.errors.join(" , ");
