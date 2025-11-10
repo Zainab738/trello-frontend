@@ -9,6 +9,33 @@ import CreateIcon from "@mui/icons-material/Create";
 import { useDraggable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
 
+export interface Task {
+  _id: string;
+  title: string;
+  description: string;
+  status: string;
+  deadline: string;
+}
+
+interface TaskCardProps {
+  task: Task;
+  moveLeft?: (task: Task) => void;
+  moveRight?: (task: Task) => void;
+  projectId: string;
+  setTasks: React.Dispatch<React.SetStateAction<Task[]>>;
+  setEdit: (data: {
+    projectId: string;
+    taskId: string;
+    setTasks: React.Dispatch<React.SetStateAction<Task[]>>;
+  }) => void;
+  setDelTask: (data: {
+    projectId: string;
+    taskId: string;
+    setTasks: React.Dispatch<React.SetStateAction<Task[]>>;
+  }) => void;
+  color?: string;
+}
+
 export default function TaskCard({
   task,
   moveLeft,
@@ -18,7 +45,7 @@ export default function TaskCard({
   setEdit,
   setDelTask,
   color = "white",
-}) {
+}: TaskCardProps) {
   const { attributes, listeners, setNodeRef, transform, isDragging } =
     useDraggable({
       id: task._id,
@@ -29,7 +56,7 @@ export default function TaskCard({
     opacity: 1,
     pointerEvents: isDragging ? "none" : "auto",
     transition: "none",
-  };
+  } as React.CSSProperties;
 
   return (
     <li className="list-none">

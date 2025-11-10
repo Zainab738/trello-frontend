@@ -7,19 +7,36 @@ import Modal from "@mui/material/Modal";
 import Container from "@mui/material/Container";
 import Alert from "@mui/material/Alert";
 
-export default function CreateProject({ open = true, onClose, setProject }) {
-  const navigate = useNavigate();
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [alertType, setAlertType] = useState("");
+interface Project {
+  _id: string;
+  title: string;
+  content: string;
+}
 
+interface CreateProjectProps {
+  open?: boolean;
+  onClose: () => void;
+  setProject: React.Dispatch<React.SetStateAction<Project[]>>;
+}
+
+export default function CreateProject({
+  open = true,
+  onClose,
+  setProject,
+}: CreateProjectProps) {
+  const navigate = useNavigate();
+  const [error, setError] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
+  const [title, setTitle] = useState<string>("");
+  const [content, setContent] = useState<string>("");
+  const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
+  const [alertType, setAlertType] = useState<
+    "success" | "error" | "info" | "warning"
+  >("success");
   const handleSnackbarOpen = () => setSnackbarOpen(true);
   const handleSnackbarClose = () => setSnackbarOpen(false);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
     try {
@@ -39,9 +56,15 @@ export default function CreateProject({ open = true, onClose, setProject }) {
         setError(res.data?.message || "Project creation failed!");
         handleSnackbarOpen();
       }
-    } catch (err) {
+    } catch (err: unknown) {
       setAlertType("error");
-      setError(err.message || "Failed to create task");
+
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Failed to create task");
+      }
+
       handleSnackbarOpen();
     } finally {
       setLoading(false);
@@ -77,12 +100,12 @@ export default function CreateProject({ open = true, onClose, setProject }) {
           <div className="flex space-x-4">
             <Button
               disabled={loading}
-              onClick={handleSubmit}
-              color="orangebutton"
+              type="submit"
+              sx={{ color: "orangebutton.main" }}
             >
               {loading ? <CircularProgress size={30} /> : "Save Changes"}
             </Button>
-            <Button onClick={handleBack} color="deletebutton">
+            <Button onClick={handleBack} sx={{ color: "deletebutton.main" }}>
               cancel{" "}
             </Button>
           </div>

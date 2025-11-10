@@ -6,51 +6,63 @@ import { useEffect } from "react";
 import { TextField, Input, Button, Snackbar } from "@mui/material";
 import Alert from "@mui/material/Alert";
 import { CircularProgress } from "@mui/material";
-import { getProject, updateProject } from "../api/projectApi";
+import { getProject, updateProject, getoneproject } from "../api/projectApi";
 
+interface Project {
+  _id: string;
+  title: string;
+  content: string;
+}
+
+interface EditTaskProps {
+  open?: boolean;
+  onClose: () => void;
+  projectId: string;
+  setProject: React.Dispatch<React.SetStateAction<Project[]>>;
+}
 export default function EditTask({
   open = true,
   onClose,
   projectId,
   setProject,
-}) {
+}: EditTaskProps) {
   const navigate = useNavigate();
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
+  const [error, setError] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
+  const [title, setTitle] = useState<string>("");
+  const [content, setContent] = useState<string>("");
   const id = projectId;
 
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [alertType, setAlertType] = useState("");
+  const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
+  const [alertType, setAlertType] = useState<
+    "success" | "error" | "info" | "warning"
+  >("success");
+
   const handleSnackbarOpen = () => setSnackbarOpen(true);
   const handleSnackbarClose = () => setSnackbarOpen(false);
 
   useEffect(() => {
     const fetchTask = async () => {
       try {
-        const res = await getProject(projectId);
+        const res = await getoneproject(projectId);
 
         if (res.data?.project) {
-          const project = res.data.project.find((p) => p._id === id);
-          console.log(project);
-          console.log(res.data.project);
-          if (!project) {
-            console.log(project);
-            setError("project not found");
-            return;
-          }
+          const project = res.data.project;
           setTitle(project.title);
           setContent(project.content);
         }
-      } catch (err) {
-        setError(err.message || "Failed to fetch project");
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError("Failed to fetch project");
+        }
       }
     };
     fetchTask();
   }, [projectId]);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
 
@@ -78,9 +90,15 @@ export default function EditTask({
           onClose();
         }, 1000);
       }
-    } catch (err) {
+    } catch (err: unknown) {
       setAlertType("error");
-      setError(err.message || "Failed to edit project");
+
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Failed to edit project");
+      }
+
       handleSnackbarOpen();
     } finally {
       setLoading(false);
@@ -114,12 +132,12 @@ export default function EditTask({
           <div className="flex space-x-4">
             <Button
               disabled={loading}
-              onClick={handleSubmit}
-              color="orangebutton"
+              sx={{ color: "orangebutton.main" }}
+              type="submit"
             >
               {loading ? <CircularProgress size={30} /> : "Save Changes"}
             </Button>
-            <Button onClick={handleBack} color="deletebutton">
+            <Button onClick={handleBack} sx={{ color: "deletebutton.main" }}>
               cancel{" "}
             </Button>
           </div>

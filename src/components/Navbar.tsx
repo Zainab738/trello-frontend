@@ -7,8 +7,13 @@ import { getUser } from "../api/userApi";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 
 function Navbar() {
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [user, setUser] = useState(null);
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+  interface User {
+    profilePic?: string;
+    username?: string;
+    email?: string;
+  }
+  const [user, setUser] = useState<User | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -23,7 +28,7 @@ function Navbar() {
     fetchUser();
   }, []);
 
-  const handleClick = (event) => {
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
 
@@ -48,10 +53,10 @@ function Navbar() {
     <div>
       <AppBar
         position="static"
-        color="header"
         className="p-2"
         sx={{
           borderBottom: "2px solid #dedede",
+          backgroundColor: "header.main",
         }}
       >
         <div className="flex justify-between items-center w-full px-2">

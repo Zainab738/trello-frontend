@@ -6,19 +6,34 @@ import Container from "@mui/material/Container";
 import { deleteTasks } from "../api/taskApi";
 import Alert from "@mui/material/Alert";
 
+interface Task {
+  _id: string;
+  title: string;
+  content: string;
+}
+
+interface DeleteTaskProps {
+  open?: boolean;
+  onClose: () => void;
+  projectId: string;
+  setTasks: React.Dispatch<React.SetStateAction<Task[]>>;
+  taskId: string;
+}
+
 export default function DeleteTask({
   open = true,
   onClose,
   projectId,
   taskId,
   setTasks,
-}) {
+}: DeleteTaskProps) {
   const navigate = useNavigate();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [alertType, setAlertType] = useState("");
-
+  const [alertType, setAlertType] = useState<
+    "success" | "error" | "info" | "warning"
+  >("success");
   const handleSnackbarOpen = () => setSnackbarOpen(true);
   const handleSnackbarClose = () => setSnackbarOpen(false);
 
@@ -39,9 +54,10 @@ export default function DeleteTask({
         setError("Unexpected response from server");
         handleSnackbarOpen();
       }
-    } catch (err) {
+    } catch (err: unknown) {
       setAlertType("error");
-      setError(err.message || "Failed to delete task");
+      if (err instanceof Error)
+        setError(err.message || "Failed to create task");
       handleSnackbarOpen();
     } finally {
       setLoading(false);
@@ -62,12 +78,12 @@ export default function DeleteTask({
           <Button
             onClick={handleDelete}
             disabled={loading}
-            color="orangebutton"
+            sx={{ color: "orangebutton.main" }}
           >
             {loading ? "Deleting..." : "Yes, delete"}
           </Button>
 
-          <Button onClick={handleBack} color="deletebutton">
+          <Button onClick={handleBack} sx={{ color: "deletebutton.main" }}>
             cancel{" "}
           </Button>
         </div>

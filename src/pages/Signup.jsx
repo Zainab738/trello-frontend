@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { signup } from "../api/userApi";
 import Button from "@mui/material/Button";
 import { Input } from "@mui/material";
 import Link from "@mui/material/Link";
@@ -9,6 +8,7 @@ import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import SignupValidation from "../validation/SignupValidation";
 import InputBase from "@mui/material/InputBase";
+import { signup, uploadImageToS3 } from "../api/userApi";
 
 function Signup() {
   const navigate = useNavigate();
@@ -45,15 +45,20 @@ function Signup() {
 
     try {
       setLoading(true);
-      const formData = new FormData();
-      formData.append("email", email);
-      formData.append("username", username);
-      formData.append("password", password);
-      if (pic) formData.append("profilePic", pic);
 
-      const res = await signup(formData);
+      let imageUrl = null;
+      if (pic) {
+        imageUrl = await uploadImageToS3(pic);
+      }
 
-      if (res.data?.message === "User created") {
+      const res = await signup({
+        email,
+        username,
+        password,
+        profilePic: imageUrl,
+      });
+
+      if (res.data?.message === "User created successfully") {
         setError("User created! Check your email to verify.");
         setAlertType("success");
         handleSnackbarOpen();

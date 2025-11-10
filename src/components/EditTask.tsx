@@ -16,9 +16,24 @@ import {
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import { getTasks, updateTasks } from "../api/taskApi";
 import Alert from "@mui/material/Alert";
+
+interface Task {
+  _id: string;
+  title: string;
+  content: string;
+  deadline: string;
+}
+
+interface EditTaskProps {
+  open?: boolean;
+  onClose: () => void;
+  projectId: string;
+  setTasks: React.Dispatch<React.SetStateAction<Task[]>>;
+  taskId: string;
+}
 
 export default function EditTask({
   open = true,
@@ -26,17 +41,18 @@ export default function EditTask({
   projectId,
   taskId,
   setTasks,
-}) {
+}: EditTaskProps) {
   const navigate = useNavigate();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState("");
-  const [deadline, setDeadline] = useState(null);
+  const [deadline, setDeadline] = useState<Dayjs | null>(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [alertType, setAlertType] = useState("");
-
+  const [alertType, setAlertType] = useState<
+    "success" | "error" | "info" | "warning"
+  >("success");
   const id = taskId;
 
   const handleSnackbarOpen = () => setSnackbarOpen(true);
@@ -47,7 +63,7 @@ export default function EditTask({
       try {
         const res = await getTasks(projectId);
         if (res.data?.task) {
-          const task = res.data.task.find((t) => t._id === id);
+          const task = res.data.task.find((t: Task) => t._id === id);
           if (!task) {
             setError("Task not found");
             return;
@@ -57,16 +73,17 @@ export default function EditTask({
           setStatus(task.status);
           setDeadline(dayjs(task.deadline, "DD-MM-YYYY"));
         }
-      } catch (err) {
-        setError(err.message || "Failed to load task");
+      } catch (err: unknown) {
         setAlertType("error");
+        if (err instanceof Error)
+          setError(err.message || "Failed to create task");
         handleSnackbarOpen();
       }
     };
     fetchTask();
   }, [id, projectId]);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
 
@@ -75,7 +92,7 @@ export default function EditTask({
         title,
         description,
         status,
-        deadline: deadline ? deadline.format("DD-MM-YYYY") : null,
+        deadline: deadline ? deadline.format("DD-MM-YYYY") : "",
         project: projectId,
       });
 
@@ -91,7 +108,7 @@ export default function EditTask({
                   title,
                   description,
                   status,
-                  deadline: deadline ? deadline.format("DD-MM-YYYY") : null,
+                  deadline: deadline ? deadline.format("DD-MM-YYYY") : "",
                 }
               : task
           )
@@ -100,9 +117,10 @@ export default function EditTask({
           onClose();
         }, 1000);
       }
-    } catch (err) {
+    } catch (err: unknown) {
       setAlertType("error");
-      setError(err.message || "Failed to update task");
+      if (err instanceof Error)
+        setError(err.message || "Failed to update task");
       handleSnackbarOpen();
     } finally {
       setLoading(false);
@@ -156,10 +174,14 @@ export default function EditTask({
           </LocalizationProvider>
 
           <div className="flex space-x-4 mt-4">
-            <Button disabled={loading} type="submit" color="orangebutton">
+            <Button
+              disabled={loading}
+              type="submit"
+              sx={{ color: "orangebutton.main" }}
+            >
               {loading ? <CircularProgress size={30} /> : "Save Changes"}
             </Button>
-            <Button onClick={onClose} color="deletebutton">
+            <Button onClick={onClose} sx={{ color: "deletebutton.main" }}>
               Cancel
             </Button>
           </div>

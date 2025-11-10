@@ -1,0 +1,34 @@
+{
+  "compilerOptions": {
+    // Basic JS Target & Module
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "node",
+
+    // React + JSX
+    "jsx": "react-jsx",
+
+    // Type Checking
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+
+    // Output & Declaration
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+
+    // Module Handling
+    "isolatedModules": true,
+    "skipLibCheck": true,
+    "verbatimModuleSyntax": false,
+
+    // Optional Styling / Safety
+    "noUncheckedSideEffectImports": true,
+    "moduleDetection": "force"
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"]
+}

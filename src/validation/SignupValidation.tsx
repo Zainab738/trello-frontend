@@ -13,14 +13,20 @@ const SignupValidation = Yup.object().shape({
     .min(8, "Password must be at least 8 characters")
     .required("Password is required"),
 
-  profilePic: Yup.mixed().test(
-    "is-valid-type",
-    "Only .jpg, .jpeg, or .png files are allowed",
-    function (value) {
-      if (!value) return true;
-      return ["image/jpeg", "image/png", "image/jpg"].includes(value.type);
-    }
-  ),
+  profilePic: Yup.mixed()
+    .notRequired()
+    .nullable()
+    .test(
+      "is-valid-type",
+      "Only .jpg, .jpeg, or .png files are allowed",
+      (value) => {
+        if (!value) return true;
+        if (value instanceof File) {
+          return ["image/jpeg", "image/png", "image/jpg"].includes(value.type);
+        }
+        return false;
+      }
+    ),
 });
 
 export default SignupValidation;

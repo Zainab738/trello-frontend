@@ -1,7 +1,11 @@
 import React from "react";
 import Container from "@mui/material/Container";
 
-function CardContainer({ children }) {
+interface CardContainerProps {
+  children: React.ReactNode;
+}
+
+function CardContainer({ children }: CardContainerProps) {
   return <Container>{children}</Container>;
 }
 

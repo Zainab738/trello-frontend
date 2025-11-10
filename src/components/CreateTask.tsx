@@ -5,6 +5,8 @@ import Container from "@mui/material/Container";
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { createTask } from "../api/taskApi";
+import { ValidationError } from "yup";
+
 import {
   TextField,
   Input,
@@ -18,43 +20,58 @@ import {
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import { CircularProgress } from "@mui/material";
 import Alert from "@mui/material/Alert";
 import TaskValidation from "../validation/TaskValidation";
+
+interface Task {
+  _id: string;
+  title: string;
+  content: string;
+}
+
+interface CreateTaskProps {
+  open?: boolean;
+  onClose: () => void;
+  projectId: string;
+  setTasks: React.Dispatch<React.SetStateAction<Task[]>>;
+}
 
 export default function CreateTask({
   open = true,
   onClose,
   projectId,
   setTasks,
-}) {
+}: CreateTaskProps) {
   const navigate = useNavigate();
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState("");
-  const [deadline, setDeadline] = useState(null);
+  const [deadline, setDeadline] = useState<Dayjs | null>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [alertType, setAlertType] = useState("");
+  const [alertType, setAlertType] = useState<
+    "success" | "error" | "info" | "warning"
+  >("success");
 
   const handleSnackbarOpen = () => setSnackbarOpen(true);
   const handleSnackbarClose = () => setSnackbarOpen(false);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       await TaskValidation.validate(
         { title, description, status, deadline },
         { abortEarly: false }
       );
-    } catch (validationError) {
-      if (validationError) {
-        const messages = validationError.inner
-          .map((err) => err.message)
-          .join(", ");
+    } catch (err) {
+      const validationError = err as ValidationError;
+
+      if (validationError.inner && validationError.inner.length > 0) {
+        const messages = validationError.inner.map((e) => e.message).join(", ");
         setAlertType("error");
         setError(messages);
         handleSnackbarOpen();
@@ -69,7 +86,7 @@ export default function CreateTask({
         title,
         description,
         status,
-        deadline: deadline ? deadline.format("DD-MM-YYYY") : null,
+        deadline: deadline ? deadline.format("DD-MM-YYYY") : "",
         project: projectId,
       });
 
@@ -86,9 +103,10 @@ export default function CreateTask({
         setError(res.data?.message || "Task creation failed!");
         handleSnackbarOpen();
       }
-    } catch (err) {
+    } catch (err: unknown) {
       setAlertType("error");
-      setError(err.message || "Failed to create task");
+      if (err instanceof Error)
+        setError(err.message || "Failed to create task");
       handleSnackbarOpen();
     } finally {
       setLoading(false);
@@ -145,12 +163,12 @@ export default function CreateTask({
           <div className="flex space-x-4">
             <Button
               disabled={loading}
-              onClick={handleSubmit}
-              color="orangebutton"
+              type="submit"
+              sx={{ color: "orangebutton.main" }}
             >
               {loading ? <CircularProgress size={30} /> : "Save Changes"}
             </Button>
-            <Button onClick={handleBack} color="deletebutton">
+            <Button onClick={handleBack} sx={{ color: "deletebutton.main" }}>
               cancel{" "}
             </Button>
           </div>

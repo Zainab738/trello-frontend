@@ -6,19 +6,33 @@ import Container from "@mui/material/Container";
 import { deleteProject } from "../api/projectApi";
 import Alert from "@mui/material/Alert";
 
+interface Project {
+  _id: string;
+  title: string;
+  content: string;
+}
+
+interface DeleteTaskProps {
+  open?: boolean;
+  onClose: () => void;
+  setProject: React.Dispatch<React.SetStateAction<Project[]>>;
+  projectId: string;
+}
+
 export default function DeleteTask({
   open = true,
   onClose,
   projectId,
   setProject,
-}) {
+}: DeleteTaskProps) {
   const navigate = useNavigate();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const id = projectId;
   const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [alertType, setAlertType] = useState("");
-
+  const [alertType, setAlertType] = useState<
+    "success" | "error" | "info" | "warning"
+  >("success");
   const handleSnackbarOpen = () => setSnackbarOpen(true);
   const handleSnackbarClose = () => setSnackbarOpen(false);
 
@@ -43,10 +57,12 @@ export default function DeleteTask({
         setError("Unexpected response from server");
         handleSnackbarOpen();
       }
-    } catch (err) {
+    } catch (err: unknown) {
       setAlertType("error");
-      setError(err.message || "Failed to delete project");
-      handleSnackbarOpen();
+      if (err instanceof Error) {
+        setError(err.message || "Failed to delete project");
+        handleSnackbarOpen();
+      }
     } finally {
       setLoading(false);
     }
@@ -66,12 +82,12 @@ export default function DeleteTask({
           <Button
             onClick={handleDelete}
             disabled={loading}
-            color="orangebutton"
+            sx={{ color: "orangebutton.main" }}
           >
             {loading ? "Deleting..." : "Yes, delete"}
           </Button>
 
-          <Button onClick={handleBack} color="deletebutton">
+          <Button onClick={handleBack} sx={{ color: "deletebutton.main" }}>
             cancel{" "}
           </Button>
         </div>

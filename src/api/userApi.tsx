@@ -1,8 +1,27 @@
 import axios from "axios";
+export const getUploadUrl = () => userApi.get("/generate-upload-url");
+export interface User {
+  _id?: string;
+  username: string;
+  email: string;
+  password: string;
+}
+export const uploadImageToS3 = async (file: File) => {
+  const { data } = await getUploadUrl();
+  const uploadUrl = data.uploadURL;
 
+  await fetch(uploadUrl, {
+    method: "PUT",
+    headers: { "Content-Type": file.type },
+    body: file,
+  });
+
+  return uploadUrl.split("?")[0];
+};
 const userApi = axios.create({
   baseURL: "http://localhost:3000/users",
 });
+
 //token
 userApi.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
@@ -45,16 +64,16 @@ userApi.interceptors.response.use(
 );
 
 // signup
-export const signup = (data) => userApi.post("/signup", data);
+export const signup = (data: User) => userApi.post("/signup", data);
 
 // login
-export const login = (data) => userApi.post("/login", data);
+export const login = (data: User) => userApi.post("/login", data);
 
 // get user
 export const getUser = () => userApi.get("/getUser");
 
 // send password reset email
-export const sendResetPasswordEmail = (email) =>
+export const sendResetPasswordEmail = (email: string) =>
   userApi.post("/ResetPassword", { email });
 
 export default userApi;

@@ -1,6 +1,15 @@
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
+export interface Task {
+  _id?: string;
+  title: string;
+  description: string;
+  status: string;
+  deadline: string;
+  project: string;
+}
+
 const taskApi = axios.create({ baseURL: "http://localhost:3000/tasks" });
 //token
 taskApi.interceptors.request.use((config) => {
@@ -44,19 +53,19 @@ taskApi.interceptors.response.use(
   }
 );
 //fetch
-export const getTasks = (projectId) => {
+export const getTasks = (projectId: string) => {
   return taskApi.get(`/get/${projectId}`);
 };
 
 //create
-export const createTask = (data) => {
+export const createTask = (data: Task) => {
   return taskApi.post("/create", data);
 };
 //delete
-export const deleteTasks = (id) => {
+export const deleteTasks = (id: string) => {
   return taskApi.delete(`/delete/${id}`);
 };
 //update
-export const updateTasks = (id, data) => {
+export const updateTasks = (id: string, data: Task) => {
   return taskApi.patch(`/update/${id}`, data);
 };

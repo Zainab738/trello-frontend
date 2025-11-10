@@ -1,4 +1,13 @@
 import axios from "axios";
+export interface Project {
+  _id: string;
+  title: string;
+  content: string;
+}
+interface CreateProjectResponse {
+  message: string;
+  project: Project;
+}
 
 const projectApi = axios.create({ baseURL: "http://localhost:3000/projects" });
 //token
@@ -46,19 +55,26 @@ projectApi.interceptors.response.use(
 export const getProject = () => {
   return projectApi.get("/getprojects");
 };
-//create
-export const createProject = (data) => {
-  return projectApi.post("/create", data);
+
+// Create project
+export const createProject = (data: { title: string; content: string }) => {
+  return projectApi.post<CreateProjectResponse>("/create", data);
 };
-//delete
-export const deleteProject = (id) => {
-  return projectApi.delete(`/deleteprojects/${id}`);
+
+// Delete project
+export const deleteProject = (id: string) => {
+  return projectApi.delete<{ message: string }>(`/deleteprojects/${id}`);
 };
-//update
-export const updateProject = (id, data) => {
-  return projectApi.patch(`/update/${id}`, data);
+
+// Update project
+export const updateProject = (
+  id: string,
+  data: { title: string; content: string }
+) => {
+  return projectApi.patch<{ message: string }>(`/update/${id}`, data);
 };
-//getoneproject
-export const getoneproject = (id) => {
-  return projectApi.get(`/getoneproject/${id}`);
+
+// Get one project
+export const getoneproject = (id: string) => {
+  return projectApi.get<{ project: Project }>(`/getoneproject/${id}`);
 };
