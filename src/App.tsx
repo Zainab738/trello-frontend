@@ -1,3 +1,4 @@
+// @ts-ignore
 import Routes from "./Routes";
 import { ThemeProvider } from "@mui/material/styles";
 import theme from "./style/theme";

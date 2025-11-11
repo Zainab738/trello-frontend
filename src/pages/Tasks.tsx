@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getTasks, updateTasks } from "../api/taskApi";
 import { useNavigate, useParams } from "react-router-dom";
+// @ts-ignore
 import TaskColumn from "../components/TaskColumn";
 import { Button, IconButton } from "@mui/material";
 import CreateTask from "../components/CreateTask";
@@ -15,22 +16,27 @@ import {
   DragOverlay,
 } from "@dnd-kit/core";
 import TaskCard from "../components/TaskCard";
+import { DragStartEvent, DragEndEvent } from "@dnd-kit/core";
+import type { Task } from "../components/type";
 
 export default function Task() {
-  const { projectId } = useParams();
+  const { projectId } = useParams<{ projectId: string }>();
   const [error, setError] = useState("");
-  const [tasks, setTasks] = useState([]);
-  const [Create, setCreate] = useState(null);
   const [projectName, setProjectName] = useState("");
-  const [activeId, setActiveId] = useState(null);
-  const [activeTaskOverlay, setActiveTaskOverlay] = useState(null);
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [Create, setCreate] = useState<{
+    projectId: string;
+    setTasks: React.Dispatch<React.SetStateAction<Task[]>>;
+  } | null>(null);
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const [activeTaskOverlay, setActiveTaskOverlay] = useState<Task | null>(null);
 
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchTasks = async () => {
       try {
-        const res = await getTasks(projectId);
+        const res = await getTasks(projectId!);
 
         if (
           res.data?.message === "Tasks fetched successfully" ||
@@ -41,20 +47,21 @@ export default function Task() {
           setError("Unexpected response from server");
         }
 
-        const projectRes = await getoneproject(projectId);
+        const projectRes = await getoneproject(projectId!);
         const currentProject = projectRes.data.project;
         setProjectName(
           currentProject ? currentProject.title : "Unknown Project"
         );
-      } catch (err) {
-        setError(err.message || "Failed to fetch tasks");
+      } catch (err: unknown) {
+        if (err instanceof Error)
+          setError(err.message || "Failed to fetch tasks");
       }
     };
 
     fetchTasks();
   }, [projectId]);
 
-  const handleMove = async (task, newStatus) => {
+  const handleMove = async (task: Task, newStatus: Task["status"]) => {
     console.log("task", task);
     console.log("new status", newStatus);
 
@@ -68,13 +75,13 @@ export default function Task() {
 
   const sensors = useSensors(useSensor(PointerSensor));
 
-  const handleDragStart = (event) => {
-    setActiveId(event.active.id);
+  const handleDragStart = (event: DragStartEvent) => {
+    setActiveId(String(event.active.id));
     const task = tasks.find((t) => t._id === event.active.id);
-    setActiveTaskOverlay(task);
+    setActiveTaskOverlay(task || null);
   };
 
-  const handleDragEnd = (event) => {
+  const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (!over) {
       setActiveId(null);
@@ -83,7 +90,7 @@ export default function Task() {
     }
 
     const activeTask = tasks.find((t) => t._id === active.id);
-    const newStatus = over.id;
+    const newStatus = over.id as "Tasks" | "In Progress" | "In Review" | "Done";
 
     if (activeTask && activeTask.status !== newStatus) {
       handleMove(activeTask, newStatus);
@@ -97,15 +104,18 @@ export default function Task() {
     <div className="flex flex-col mt-2">
       <div className="flex flex-col md:flex-row gap-6 mb-5 items-start ml-5">
         <h1 className="text-2xl font-semibold">
-          <IconButton variant="outlined" onClick={() => navigate(-1)}>
+          <IconButton onClick={() => navigate(-1)}>
             <ArrowBackIcon />
           </IconButton>
           {projectName}
         </h1>
         <Button
-          color="orangebutton"
+          sx={{ color: "orangebutton.main" }}
           variant="outlined"
-          onClick={() => setCreate({ projectId, setTasks })}
+          onClick={() => {
+            if (!projectId) return;
+            setCreate({ projectId, setTasks });
+          }}
         >
           Create new task
         </Button>
@@ -122,7 +132,7 @@ export default function Task() {
               title="Tasks"
               bgColor="bg-[#FA5A7C]"
               tasks={tasks.filter((t) => t.status === "Tasks")}
-              moveRight={(task) => handleMove(task, "In Progress")}
+              moveRight={(task: Task) => handleMove(task, "In Progress")}
               projectId={projectId}
               error={error}
               setTasks={setTasks}
@@ -132,8 +142,8 @@ export default function Task() {
               title="In Progress"
               bgColor="bg-[#FF947A]"
               tasks={tasks.filter((t) => t.status === "In Progress")}
-              moveLeft={(task) => handleMove(task, "Tasks")}
-              moveRight={(task) => handleMove(task, "In Review")}
+              moveLeft={(task: Task) => handleMove(task, "Tasks")}
+              moveRight={(task: Task) => handleMove(task, "In Review")}
               projectId={projectId}
               error={error}
               setTasks={setTasks}
@@ -143,8 +153,8 @@ export default function Task() {
               title="In Review"
               bgColor="bg-[#38D857]"
               tasks={tasks.filter((t) => t.status === "In Review")}
-              moveLeft={(task) => handleMove(task, "In Progress")}
-              moveRight={(task) => handleMove(task, "Done")}
+              moveLeft={(task: Task) => handleMove(task, "In Progress")}
+              moveRight={(task: Task) => handleMove(task, "Done")}
               projectId={projectId}
               error={error}
               setTasks={setTasks}
@@ -154,7 +164,7 @@ export default function Task() {
               title="Done"
               bgColor="bg-[#BF83FF]"
               tasks={tasks.filter((t) => t.status === "Done")}
-              moveLeft={(task) => handleMove(task, "In Review")}
+              moveLeft={(task: Task) => handleMove(task, "In Review")}
               moveRight={null}
               projectId={projectId}
               error={error}
@@ -162,7 +172,7 @@ export default function Task() {
               activeId={activeId}
             />
             <DragOverlay>
-              {activeTaskOverlay && (
+              {activeTaskOverlay && projectId && (
                 <div style={{}}>
                   <TaskCard
                     task={activeTaskOverlay}
@@ -171,6 +181,8 @@ export default function Task() {
                     moveLeft={() => {}}
                     moveRight={() => {}}
                     color="black"
+                    setEdit={() => {}}
+                    setDelTask={() => {}}
                   />
                 </div>
               )}

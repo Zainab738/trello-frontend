@@ -13,14 +13,20 @@ function VerificationSuccess() {
   useEffect(() => {
     const verifyUser = async () => {
       try {
+        if (!token) {
+          setMessage("Invalid token.");
+          return;
+        }
         const res = await verification(token);
         if (res.data?.message === "Verified") {
           setMessage("Verification Successful!");
           console.log("User successfully verified!");
         }
-      } catch (err) {
-        console.error("Verification failed:", err.response?.data || err);
-        setMessage(err.response?.data?.message || "Token expired or invalid.");
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          console.error("Verification failed:", err?.message || err);
+          setMessage(err?.message || "Token expired or invalid.");
+        }
       }
     };
 
@@ -34,7 +40,7 @@ function VerificationSuccess() {
         {message == "Verification Successful!" && (
           <Button
             variant="contained"
-            color="orangebutton"
+            sx={{ color: "orangebutton.main" }}
             onClick={() => {
               navigate("/Login ");
             }}

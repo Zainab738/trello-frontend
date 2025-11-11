@@ -2,9 +2,10 @@ import axios from "axios";
 export const getUploadUrl = () => userApi.get("/generate-upload-url");
 export interface User {
   _id?: string;
-  username: string;
+  username?: string;
   email: string;
   password: string;
+  profilePic?: File;
 }
 export const uploadImageToS3 = async (file: File) => {
   const { data } = await getUploadUrl();

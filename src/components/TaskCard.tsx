@@ -8,14 +8,7 @@ import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import CreateIcon from "@mui/icons-material/Create";
 import { useDraggable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
-
-export interface Task {
-  _id: string;
-  title: string;
-  description: string;
-  status: string;
-  deadline: string;
-}
+import type { Task } from "../components/type";
 
 interface TaskCardProps {
   task: Task;

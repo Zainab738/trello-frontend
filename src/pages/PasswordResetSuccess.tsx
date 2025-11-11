@@ -17,7 +17,7 @@ function ResetPasswordSuccess() {
         </p>
         <Button
           variant="contained"
-          color="orangebutton"
+          sx={{ color: "orangebutton.main" }}
           onClick={() => {
             navigate("/Login ");
           }}
