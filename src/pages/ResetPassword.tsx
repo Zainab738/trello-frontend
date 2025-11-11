@@ -19,8 +19,8 @@ function ResetPassword() {
       if (res.data.message == "Reset email sent successfully")
         console.log(res.data.message);
       setMessage(res.data.message);
-    } catch (err) {
-      console.error(err.response?.data?.message || err);
+    } catch (err: unknown) {
+      if (err instanceof Error) console.error(err.message || err);
     }
   };
 
@@ -44,7 +44,7 @@ function ResetPassword() {
 
         <Button
           variant="contained"
-          color="orangebutton"
+          sx={{ backgroundColor: "orangebutton.main" }}
           onClick={() => {
             handleSendEmail();
           }}

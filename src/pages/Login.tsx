@@ -16,14 +16,15 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [error, setError] = useState("");
-  const [alertType, setAlertType] = useState("");
-
+  const [alertType, setAlertType] = useState<
+    "success" | "error" | "info" | "warning"
+  >("success");
   const navigate = useNavigate();
 
   const handleSnackbarOpen = () => setSnackbarOpen(true);
   const handleSnackbarClose = () => setSnackbarOpen(false);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
 
@@ -46,9 +47,15 @@ export default function Login() {
         setError(res?.data?.message || "Login failed!");
         handleSnackbarOpen();
       }
-    } catch (err) {
+    } catch (err: unknown) {
       setAlertType("error");
-      setError(err?.message || "Wrong username or password");
+
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Wrong username or password");
+      }
+
       handleSnackbarOpen();
     } finally {
       setLoading(false);
@@ -89,7 +96,11 @@ export default function Login() {
             onChange={(e) => setPassword(e.target.value)}
           />
 
-          <Button variant="contained" type="submit" color="orangebutton">
+          <Button
+            variant="contained"
+            type="submit"
+            sx={{ backgroundColor: "orangebutton.main" }}
+          >
             {loading ? (
               <CircularProgress size={30} />
             ) : (

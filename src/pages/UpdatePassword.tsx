@@ -19,24 +19,31 @@ function UpdatePassword() {
 
   useEffect(() => {
     const verifyUser = async () => {
+      if (!token) {
+        setError("Invalid or missing token.");
+        return;
+      }
+
       try {
         const res = await verification(token);
         if (res.data?.message === "Verified") {
-          setMessage("Token verified ");
+          setMessage("Token verified");
           console.log("Token verification success");
         } else {
           setMessage(res.data?.message);
         }
-      } catch (err) {
-        console.error("Verification failed:", err.response?.data || err);
-        setError(err.response?.data?.message || "Token expired or invalid.");
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          console.error("Verification failed:", err);
+          setError(err.message || "Token expired or invalid.");
+        }
       }
     };
 
     verifyUser();
   }, [token]);
 
-  const handleUpdatePassword = async (e) => {
+  const handleUpdatePassword = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
 
@@ -52,12 +59,19 @@ function UpdatePassword() {
 
     try {
       setLoading(true);
+      if (!token) {
+        setError("Invalid token.");
+        return;
+      }
+
       const res = await updatePassword(token, password);
       console.log("Update response:", res.data);
       navigate("/PasswordResetSuccess");
-    } catch (err) {
-      console.error("Update failed:", err.response?.data || err);
-      setError(err.response?.data?.message || "Failed to update password");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        console.error("Update failed:", err?.message || err);
+        setError(err?.message || "Failed to update password");
+      }
     } finally {
       setLoading(false);
     }
@@ -92,7 +106,7 @@ function UpdatePassword() {
             variant="contained"
             type="submit"
             disabled={loading}
-            color="orangebutton"
+            sx={{ backgroundColor: "orangebutton.main" }}
           >
             {loading ? (
               <CircularProgress size={30} />

@@ -4,6 +4,31 @@ import { useDroppable } from "@dnd-kit/core";
 import TaskCard from "./TaskCard";
 import DeleteTask from "./DeleteTask";
 import EditTask from "./EditTask";
+import type { Task } from "../components/type";
+
+interface TaskColumnProps {
+  title: string;
+  bgColor: string;
+  tasks: Task[];
+  moveLeft?: (task: Task) => void;
+  moveRight?: (task: Task) => void;
+  projectId: string;
+  error?: string;
+  setTasks: React.Dispatch<React.SetStateAction<Task[]>>;
+  activeId?: string | null;
+}
+
+interface DelTaskType {
+  projectId: string;
+  taskId: string;
+  setTasks: React.Dispatch<React.SetStateAction<Task[]>>;
+}
+
+interface EditTaskType {
+  projectId: string;
+  taskId: string;
+  setTasks: React.Dispatch<React.SetStateAction<Task[]>>;
+}
 
 export default function TaskColumn({
   title,
@@ -15,9 +40,9 @@ export default function TaskColumn({
   error,
   setTasks,
   activeId,
-}) {
-  const [DelTask, setDelTask] = useState(null);
-  const [Edit, setEdit] = useState(null);
+}: TaskColumnProps) {
+  const [DelTask, setDelTask] = useState<DelTaskType | null>(null);
+  const [Edit, setEdit] = useState<EditTaskType | null>(null);
 
   const { setNodeRef: setDroppableNodeRef } = useDroppable({ id: title });
 
@@ -38,8 +63,8 @@ export default function TaskColumn({
                   <TaskCard
                     key={task._id}
                     task={task}
-                    moveLeft={moveLeft}
-                    moveRight={moveRight}
+                    moveLeft={moveLeft ?? (() => {})}
+                    moveRight={moveRight ?? (() => {})}
                     projectId={projectId}
                     setTasks={setTasks}
                     setEdit={setEdit}

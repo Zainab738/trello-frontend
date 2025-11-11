@@ -6,7 +6,7 @@ import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { createTask } from "../api/taskApi";
 import { ValidationError } from "yup";
-
+import TaskValidation from "../validation/TaskValidation";
 import {
   TextField,
   Input,
@@ -23,13 +23,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
 import { CircularProgress } from "@mui/material";
 import Alert from "@mui/material/Alert";
-import TaskValidation from "../validation/TaskValidation";
-
-interface Task {
-  _id: string;
-  title: string;
-  content: string;
-}
+import type { Task } from "../components/type";
 
 interface CreateTaskProps {
   open?: boolean;

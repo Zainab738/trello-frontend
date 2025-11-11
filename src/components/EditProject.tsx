@@ -7,6 +7,8 @@ import { TextField, Input, Button, Snackbar } from "@mui/material";
 import Alert from "@mui/material/Alert";
 import { CircularProgress } from "@mui/material";
 import { getProject, updateProject, getoneproject } from "../api/projectApi";
+import { ValidationError } from "yup";
+import ProjectValidation from "../validation/ProjectValidation";
 
 interface Project {
   _id: string;
@@ -65,7 +67,23 @@ export default function EditTask({
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
+    try {
+      await ProjectValidation.validate(
+        { title, content },
+        { abortEarly: false }
+      );
+    } catch (err) {
+      const validationError = err as ValidationError;
 
+      if (validationError.inner && validationError.inner.length > 0) {
+        const messages = validationError.inner.map((e) => e.message).join(", ");
+        setAlertType("error");
+        setError(messages);
+        setLoading(false);
+        handleSnackbarOpen();
+        return;
+      }
+    }
     try {
       const res = await updateProject(id, {
         title,

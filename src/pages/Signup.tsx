@@ -9,22 +9,24 @@ import Alert from "@mui/material/Alert";
 import SignupValidation from "../validation/SignupValidation";
 import InputBase from "@mui/material/InputBase";
 import { signup, uploadImageToS3 } from "../api/userApi";
+import { ValidationError } from "yup";
 
 function Signup() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [pic, setPic] = useState(null);
+  const [pic, setPic] = useState<File | null>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [alertType, setAlertType] = useState("");
-
+  const [alertType, setAlertType] = useState<
+    "success" | "error" | "info" | "warning"
+  >("success");
   const handleSnackbarOpen = () => setSnackbarOpen(true);
   const handleSnackbarClose = () => setSnackbarOpen(false);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
 
@@ -33,14 +35,16 @@ function Signup() {
         { email, password, username },
         { abortEarly: false }
       );
-    } catch (validationError) {
-      const messages = validationError.inner
-        .map((err) => err.message)
-        .join(", ");
-      setAlertType("error");
-      setError(messages);
-      handleSnackbarOpen();
-      return;
+    } catch (err) {
+      const validationError = err as ValidationError;
+
+      if (validationError.inner && validationError.inner.length > 0) {
+        const messages = validationError.inner.map((e) => e.message).join(", ");
+        setAlertType("error");
+        setError(messages);
+        handleSnackbarOpen();
+        return;
+      }
     }
 
     try {
@@ -64,10 +68,12 @@ function Signup() {
         handleSnackbarOpen();
         setTimeout(() => navigate("/Login"), 1000);
       }
-    } catch (error) {
-      setAlertType("error");
-      setError(error.message || "Signup failed!");
-      handleSnackbarOpen();
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setAlertType("error");
+        setError(error.message || "Signup failed!");
+        handleSnackbarOpen();
+      }
     } finally {
       setLoading(false);
     }
@@ -115,10 +121,19 @@ function Signup() {
           <InputBase
             type="file"
             inputProps={{ accept: ".png, .jpg, .jpeg" }}
-            onChange={(e) => setPic(e.target.files[0])}
+            onChange={(e) => {
+              const target = e.target as HTMLInputElement;
+              if (target.files && target.files[0]) {
+                setPic(target.files[0]);
+              }
+            }}
           />
 
-          <Button variant="contained" type="submit" color="orangebutton">
+          <Button
+            variant="contained"
+            type="submit"
+            sx={{ color: "orangebutton.main" }}
+          >
             {loading ? (
               <CircularProgress size={30} />
             ) : (
