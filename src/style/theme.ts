@@ -1,5 +1,22 @@
 import { createTheme } from "@mui/material/styles";
 import { red } from "@mui/material/colors";
+import {
+  PaletteColorOptions,
+  SimplePaletteColorOptions,
+} from "@mui/material/styles";
+
+declare module "@mui/material/styles" {
+  interface Palette {
+    header: Palette["primary"];
+    deletebutton: Palette["primary"];
+    orangebutton: Palette["primary"];
+  }
+  interface PaletteOptions {
+    header?: SimplePaletteColorOptions;
+    deletebutton?: SimplePaletteColorOptions;
+    orangebutton?: SimplePaletteColorOptions;
+  }
+}
 
 const theme = createTheme({
   palette: {

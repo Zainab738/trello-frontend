@@ -15,13 +15,31 @@ import CreateIcon from "@mui/icons-material/Create";
 import DeleteProject from "../components/DeleteProject";
 import CreateProject from "../components/CreateProject";
 
+interface Project {
+  _id: string;
+  title: string;
+  content: string;
+}
+
 function Project() {
   const navigate = useNavigate();
   const [error, setError] = useState("");
-  const [project, setProject] = useState([]);
-  const [DelProject, setDelProject] = useState(null);
-  const [Edit, setEdit] = useState(null);
-  const [Create, setCreate] = useState(null);
+  const [project, setProject] = useState<Project[]>([]);
+
+  const [Create, setCreate] = useState<{
+    project: Project[];
+    setProject: React.Dispatch<React.SetStateAction<Project[]>>;
+  } | null>(null);
+
+  const [DelProject, setDelProject] = useState<{
+    projectId: string;
+    setProject: React.Dispatch<React.SetStateAction<Project[]>>;
+  } | null>(null);
+
+  const [Edit, setEdit] = useState<{
+    projectId: string;
+    setProject: React.Dispatch<React.SetStateAction<Project[]>>;
+  } | null>(null);
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -37,8 +55,12 @@ function Project() {
         } else {
           setError("Unexpected response from server");
         }
-      } catch (err) {
-        setError(err.message || "Failed to fetch project");
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError("Failed to fetch project");
+        }
       }
     };
 
@@ -55,7 +77,7 @@ function Project() {
             onClick={() => {
               setCreate({ project, setProject });
             }}
-            color="orangebutton"
+            sx={{ color: "orangebutton.main" }}
           >
             Create new Project
           </Button>
@@ -79,7 +101,7 @@ function Project() {
                     <Button
                       variant="outlined"
                       onClick={() => navigate(`/Tasks/${proj._id}`)}
-                      color="orangebutton"
+                      sx={{ color: "orangebutton.main" }}
                     >
                       {proj.title}
                     </Button>
@@ -130,7 +152,7 @@ function Project() {
       {Create && (
         <CreateProject
           open={true}
-          project={Create.project}
+          //project={Create.project}
           onClose={() => setCreate(null)}
           setProject={Create.setProject}
         />

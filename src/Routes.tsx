@@ -4,6 +4,8 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
+// @ts-ignore
+
 import Tasks from "./pages/Tasks";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";

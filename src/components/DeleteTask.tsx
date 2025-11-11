@@ -5,12 +5,7 @@ import { useNavigate } from "react-router-dom";
 import Container from "@mui/material/Container";
 import { deleteTasks } from "../api/taskApi";
 import Alert from "@mui/material/Alert";
-
-interface Task {
-  _id: string;
-  title: string;
-  content: string;
-}
+import type { Task } from "../components/type";
 
 interface DeleteTaskProps {
   open?: boolean;

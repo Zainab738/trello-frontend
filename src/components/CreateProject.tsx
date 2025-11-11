@@ -6,6 +6,8 @@ import { CircularProgress } from "@mui/material";
 import Modal from "@mui/material/Modal";
 import Container from "@mui/material/Container";
 import Alert from "@mui/material/Alert";
+import { ValidationError } from "yup";
+import ProjectValidation from "../validation/ProjectValidation";
 
 interface Project {
   _id: string;
@@ -39,6 +41,26 @@ export default function CreateProject({
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
+    try {
+      await ProjectValidation.validate(
+        { title, content },
+        { abortEarly: false }
+      );
+    } catch (err) {
+      const validationError = err as ValidationError;
+
+      if (validationError.inner && validationError.inner.length > 0) {
+        const messages = validationError.inner.map((e) => e.message).join(", ");
+        setAlertType("error");
+        setError(messages);
+        setLoading(false);
+        handleSnackbarOpen();
+        return;
+      }
+    }
+    setError("");
+    setLoading(true);
+
     try {
       setLoading(true);
       const res = await createProject({ title, content });
