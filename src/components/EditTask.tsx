@@ -19,13 +19,9 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
 import { getTasks, updateTasks } from "../api/taskApi";
 import Alert from "@mui/material/Alert";
-
-interface Task {
-  _id: string;
-  title: string;
-  content: string;
-  deadline: string;
-}
+import type { Task } from "../components/type";
+import { ValidationError } from "yup";
+import TaskValidation from "../validation/TaskValidation";
 
 interface EditTaskProps {
   open?: boolean;
@@ -47,7 +43,9 @@ export default function EditTask({
   const [loading, setLoading] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [status, setStatus] = useState("");
+  const [status, setStatus] = useState<
+    "Tasks" | "In Progress" | "In Review" | "Done"
+  >("Tasks");
   const [deadline, setDeadline] = useState<Dayjs | null>(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [alertType, setAlertType] = useState<
@@ -85,6 +83,25 @@ export default function EditTask({
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setLoading(true);
+    try {
+      await TaskValidation.validate(
+        { title, description, status, deadline },
+        { abortEarly: false }
+      );
+    } catch (err) {
+      const validationError = err as ValidationError;
+
+      if (validationError.inner && validationError.inner.length > 0) {
+        const messages = validationError.inner.map((e) => e.message).join(", ");
+        setAlertType("error");
+        setError(messages);
+        setLoading(false);
+        handleSnackbarOpen();
+        return;
+      }
+    }
+    setError("");
     setLoading(true);
 
     try {
